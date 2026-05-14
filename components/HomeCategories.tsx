@@ -1,7 +1,4 @@
-import React from 'react'
-import { Button } from './ui/button'
 import Link from 'next/link'
-import { Separator } from './ui/separator'
 import categoryImage from '@/images/product/product_1.png'
 import Image from 'next/image'
 

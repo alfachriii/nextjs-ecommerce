@@ -8,7 +8,7 @@ import SearchBar from './SearchBar'
 
 const Header = () => {
   return (
-    <header className='fixed top-0 left-0 right-0 border-b-2 border-accent py-4 bg-background/50 backdrop-blur-xl z-50'>
+    <header className='fixed top-0 left-0 right-0 border-b-2 border-accent py-4 bg-background/40 backdrop-blur-lg z-50'>
         <Container>
             <nav className='flex w-full items-center justify-between text-sm'>
                 <Logo />
