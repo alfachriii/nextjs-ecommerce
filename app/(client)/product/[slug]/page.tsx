@@ -16,7 +16,7 @@ import { GrReturn } from 'react-icons/gr'
 import { IoShareSocialOutline } from 'react-icons/io5'
 import { MdOutlineCompare } from 'react-icons/md'
 
-const page = () => {
+const ProductPage = () => {
   return (
     <main className='my-8 mt-32'>
         <Container>
@@ -108,4 +108,4 @@ const page = () => {
   )
 }
 
-export default page
+export default ProductPage
