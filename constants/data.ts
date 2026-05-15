@@ -15,6 +15,13 @@ export const categoriesData = [
     { title: "Gadget Accessories", href: "gadget-accessories" },
 ]
 
+export const brandData = [
+    { title: "Apple", href: "apple" },
+    { title: "Lenovo", href: "lenovo" },
+    { title: "Samsung", href: "samsung" },
+    { title: "Gigabyte", href: "gigabyte" }
+]
+
 export const quickLinksData = [
     {title: "About Us", href: "/about"},
     {title: "Contact Us", href: "/contact"},

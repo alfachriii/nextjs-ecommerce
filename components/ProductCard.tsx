@@ -6,8 +6,8 @@ import { IoCartOutline } from "react-icons/io5";
 
 const ProductCard = () => {
   return (
-    <article className='w-full min-h-50 border-2 border-accent-foreground/20 rounded-lg flex flex-col group'>
-        <div className='aspect-w-2 aspect-h-3 bg-secondary rounded-tl-lg rounded-tr-lg overflow-hidden'>
+    <article className='w-full h-fit border-2 border-accent-foreground/20 rounded-lg flex shrink-0 flex-col group'>
+        <div className='aspect-w-2 aspect-h-3 shrink-0 bg-secondary rounded-tl-lg rounded-tr-lg overflow-hidden'>
             <Image src={productImage} alt="product1" className='w-full h-full scale-115 object-cover hover:cursor-pointer group-hover:scale-125 transition-transform hoverEffect' />
         </div>
         <div className="w-full h-fit flex flex-col p-4 gap-2">

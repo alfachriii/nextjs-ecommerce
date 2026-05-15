@@ -44,7 +44,7 @@ const ProductPage = () => {
                     <h1 className='text-3xl font-bold text-wrap'>Macbook Pro 13 inch</h1>
                     <p className='text-md text-secondary-foreground'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium fugiat exercitationem corrupti impedit corporis laborum est sapiente minima ducimus illum!</p>
                     <Separator className='my-4' />
-                    <PriceView price={32000000} discount={38899000} className='flex-row-reverse text-2xl font-extrabold justify-end gap-4' />
+                    <PriceView price={32000000} discount={38899000} className='flex-row-reverse text-2xl justify-end gap-4' />
                     <span className='w-fit px-3 py-2 mt-4 text-sm text-primary bg-primary/20 rounded-lg'>
                         In Stock
                     </span>
