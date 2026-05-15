@@ -2,9 +2,7 @@ import Container from '@/components/Container'
 import PriceView from '@/components/PriceView'
 import ProductCharacteristics from '@/components/ProductCharacteristics'
 import ProductTabber from '@/components/ProductTabber'
-import Quantity from '@/components/Quantity'
 import RelatedProduct from '@/components/RelatedProduct'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import Separator from '@/components/ui/separator'
 import productImage from '@/images/product/product_1.png'
@@ -15,6 +13,7 @@ import { FiTruck } from 'react-icons/fi'
 import { GrReturn } from 'react-icons/gr'
 import { IoShareSocialOutline } from 'react-icons/io5'
 import { MdOutlineCompare } from 'react-icons/md'
+import Counter from '@/components/Counter'
 
 const ProductPage = () => {
   return (
@@ -51,7 +50,7 @@ const ProductPage = () => {
                     <Separator className='my-4' />
                     <div className='flex justify-between items-center'>
                         <p className='text-secondary-foreground'>Quantity</p>
-                        <Quantity />
+                        <Counter />
                     </div>
                     <div className='grid grid-cols-2 gap-4 w-full my-4'>
                         <Button className="py-6">
