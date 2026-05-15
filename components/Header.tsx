@@ -16,7 +16,7 @@ const Header = () => {
                 <div className='flex items-center gap-4 font-medium text-sm'>
                     <SearchBar />
                     <CartIcon />
-                    <Link href="/login" className='hoverEffect hover:text-chart-1'>Login</Link>
+                    <Link href="/signin" className='hoverEffect hover:text-chart-1'>Sign in</Link>
                 </div>
             </nav>
         </Container>
