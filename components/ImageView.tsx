@@ -15,7 +15,6 @@ interface Props {
 
 const ImageView = ({ images = [] }: Props) => {
     const [active, setActive] = useState(images[0]);
-    console.log(images);
 
     return (
       <div className='flex flex-col gap-4'>
@@ -36,10 +35,10 @@ const ImageView = ({ images = [] }: Props) => {
                     onClick={() => setActive(image)}
                     className={`aspect-w-1 aspect-h-1 w-24 overflow-hidden bg-secondary/50 border-2 ${active == image && "border-accent-foreground/50"} border-accent-foreground/20 rounded-lg hover:cursor-pointer hover:border-accent-foreground/50 hoverEffect group`}>
                     <Image 
-                        src={generateImageUrl(image.url, 300)} 
+                        src={generateImageUrl(image.url, 100)} 
                         alt="product image" 
-                        width={300}
-                        height={300}
+                        width={100}
+                        height={100}
                         placeholder="blur"
                         blurDataURL={image.lqip}
                         className={`w-full h-full ${active == image && "opacity-100"} opacity-70 group-hover:opacity-100 hoverEffect`} />

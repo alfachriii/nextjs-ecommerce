@@ -10,7 +10,7 @@ const BrandList = () => {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
   return (
     <div className="w-full flex flex-col">
-      <h2 className='font-semibold'>Product Categories</h2>
+      <h2 className='font-semibold'>Brands</h2>
       <RadioGroup value={selectedBrand} className="mt-4">
         {brandData.map((brand, index) => (
           <div className="flex items-center gap-3 hover:cursor-pointer hover:text-primary" key={index} onClick={() => setSelectedBrand(brand.href as string)}>

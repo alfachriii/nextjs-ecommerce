@@ -15,13 +15,12 @@ import Counter from '@/components/Counter'
 import { getProductBySlug } from '@/sanity/queries'
 import { notFound } from 'next/navigation'
 import ImageView from '@/components/ImageView'
+import { Product } from '@/sanity.types'
 
 // const ProductPage = async () => {
 const ProductPage = async ({ params }: { params: Promise<{ slug: string}> }) => {
     const { slug } = await params;
-    console.log(slug)
     const product = await getProductBySlug(slug);
-    console.log(product);
 
     if(!product) {
         notFound();

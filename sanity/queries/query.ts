@@ -13,6 +13,28 @@ const PRODUCT_BY_SLUG_QUERY = defineQuery(
   }`
 );
 
+const CATEGORIES_QUERY = defineQuery(`*[_type == 'category'] | order(name asc) {
+    ...,
+    image {
+      _key,
+      _type,
+      "url": asset->url,
+      "lqip": asset->metadata.lqip
+    },
+    "productCount": count(*[_type == "product" && references(^._id)])
+}`);
+
+const CATEGORIES_WITH_QUANTITY_QUERY = defineQuery(`*[_type == 'category'][0...$quantity] | order(name asc) {
+    ...,
+    image {
+      _key,
+      _type,
+      "url": asset->url,
+      "lqip": asset->metadata.lqip
+    },
+    "productCount": count(*[_type == "product" && references(^._id)])
+}`);
+
 const BRAND_QUERY = defineQuery(`*[_type == "product" && slug.current == $slug]{
   "brandName": brand->title
   }`);
@@ -30,6 +52,8 @@ const PRODUCTS_QUERY = `*[_type == "product"] | order(name asc){
 
 export {
   PRODUCTS_QUERY,
+  CATEGORIES_QUERY,
+  CATEGORIES_WITH_QUANTITY_QUERY,
   BRANDS_QUERY,
   PRODUCT_BY_SLUG_QUERY,
   BRAND_QUERY,

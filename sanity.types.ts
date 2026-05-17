@@ -91,12 +91,12 @@ export type Category = {
   range?: number;
   featured?: boolean;
   image?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
+    _key: string;
     _type: "image";
+    url: string;  
+    lqip: string;  
   };
+  productCount?: number;
 };
 
 export type CategoryReference = {
