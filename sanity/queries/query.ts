@@ -1,6 +1,25 @@
 import { defineQuery } from "next-sanity";
 
-const BRANDS_QUERY = defineQuery(`*[_type=='brand'] | order(name asc) `);
+const BRANDS_QUERY = defineQuery(`*[_type=='brand'] | order(name asc) {
+    ..., 
+    image {
+      _key,
+      _type,
+      "url": asset->url,
+      "lqip": asset->metadata.lqip
+    },    
+}`);
+
+const PRODUCTS_BY_VARIANT_QUERY = defineQuery(`*[_type == "product" && variant == $variant][0...$quantity]{
+    ...,
+    "categories": categories[]->title, 
+    images[] {
+        _key,
+        _type,
+        "url": asset->url,
+        "lqip": asset->metadata.lqip
+    }
+}`)
 
 const PRODUCT_BY_SLUG_QUERY = defineQuery(
   `*[_type == "product" && slug.current == $slug] | order(name asc) [0] {
@@ -51,6 +70,7 @@ const PRODUCTS_QUERY = `*[_type == "product"] | order(name asc){
 }`
 
 export {
+  PRODUCTS_BY_VARIANT_QUERY,
   PRODUCTS_QUERY,
   CATEGORIES_QUERY,
   CATEGORIES_WITH_QUANTITY_QUERY,

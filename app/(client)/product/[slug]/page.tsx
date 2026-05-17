@@ -15,12 +15,12 @@ import Counter from '@/components/Counter'
 import { getProductBySlug } from '@/sanity/queries'
 import { notFound } from 'next/navigation'
 import ImageView from '@/components/ImageView'
-import { Product } from '@/sanity.types'
+import { Product, PRODUCT_BY_SLUG_QUERY_RESULT } from '@/sanity.types'
 
 // const ProductPage = async () => {
 const ProductPage = async ({ params }: { params: Promise<{ slug: string}> }) => {
     const { slug } = await params;
-    const product = await getProductBySlug(slug);
+    const product: PRODUCT_BY_SLUG_QUERY_RESULT = await getProductBySlug(slug);
 
     if(!product) {
         notFound();
@@ -29,7 +29,7 @@ const ProductPage = async ({ params }: { params: Promise<{ slug: string}> }) => 
       <main className='my-8 mt-32'>
           <Container>
               <div className='grid grid-cols-2'>
-                  {product?.images && (
+                  {product?.images && product.images.length && (
                     <ImageView images={product.images} />
                   )}
                   <div className='flex flex-col px-8'>

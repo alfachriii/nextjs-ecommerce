@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import categoryImage from '@/images/product/product_1.png'
 import Image from 'next/image'
 import { getCategories } from '@/sanity/queries'
 import { generateImageUrl } from '@/lib/utils'
+import { CATEGORIES_QUERY_RESULT } from '@/sanity.types'
 
 const HomeCategories = async () => {
-    const categories = await getCategories(6);
+    const categories: CATEGORIES_QUERY_RESULT  = await getCategories(6);
 
     return (
       <div className='flex flex-col w-full border-2 border-accent-foreground/20 p-8 gap-4 rounded-xl'>
@@ -15,7 +15,7 @@ const HomeCategories = async () => {
               {categories?.map((category) => (
               <div key={category._id} className='w-full p-4 gap-4 flex items-center bg-secondary'>
                   <div className='aspect-w-2 aspect-h-3 w-3/12 border-2 border-destructive/30 hover:border-destructive/70 hoverEffect rounded-md group'>
-                      {category?.image && (
+                      {category?.image && category.image.url && (
                         <Link href="/">
                             <Image 
                                 src={generateImageUrl(category.image?.url, 300)} 

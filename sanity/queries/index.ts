@@ -1,4 +1,4 @@
-import { Category, Product } from "@/sanity.types";
+import { CATEGORIES_QUERY_RESULT, Category, Product } from "@/sanity.types";
 import { sanityFetch } from "../lib/live";
 import {
   BRAND_QUERY,
@@ -24,7 +24,7 @@ const getCategories = async (quantity?: number) => {
     const { data } = await sanityFetch({
       query,
       params: quantity ? { quantity } : {},
-    }) as { data: Category[] | null };
+    });
     
     return data;
   } catch (error) {
@@ -58,7 +58,7 @@ const getProductBySlug = async (slug: string) => {
     const { data } = (await sanityFetch({
       query: PRODUCT_BY_SLUG_QUERY,
       params: { slug },
-    })) as { data: Product | null };
+    }))
 
     return data;
   } catch (error) {

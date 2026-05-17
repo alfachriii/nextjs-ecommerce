@@ -91,12 +91,12 @@ export type Category = {
   range?: number;
   featured?: boolean;
   image?: {
-    _key: string;
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
     _type: "image";
-    url: string;  
-    lqip: string;  
   };
-  productCount?: number;
 };
 
 export type CategoryReference = {
@@ -122,10 +122,12 @@ export type Product = {
   name?: string;
   slug?: Slug;
   images?: Array<{
-    _key: string;
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
     _type: "image";
-    url: string;  
-    lqip: string;  
+    _key: string;
   }>;
   description?: string;
   price?: number;
@@ -279,7 +281,7 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/queries/query.ts
 // Variable: BRANDS_QUERY
-// Query: *[_type=='brand'] | order(name asc)
+// Query: *[_type=='brand'] | order(name asc) {    ...,     image {      _key,      _type,      "url": asset->url,      "lqip": asset->metadata.lqip    },    }
 export type BRANDS_QUERY_RESULT = Array<{
   _id: string;
   _type: "brand";
@@ -289,19 +291,18 @@ export type BRANDS_QUERY_RESULT = Array<{
   title?: string;
   slug?: Slug;
   description?: string;
-  image?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
+  image: {
+    _key: null;
     _type: "image";
-  };
+    url: string | null;
+    lqip: string | null;
+  } | null;
 }>;
 
 // Source: sanity/queries/query.ts
-// Variable: PRODUCT_BY_SLUG_QUERY
-// Query: *[_type == "product" && slug.current == $slug] | order(name asc) [0]
-export type PRODUCT_BY_SLUG_QUERY_RESULT = {
+// Variable: PRODUCTS_BY_VARIANT_QUERY
+// Query: *[_type == "product" && variant == $variant][0...$quantity]{    ...,    "categories": categories[]->title,     images[] {        _key,        _type,        "url": asset->url,        "lqip": asset->metadata.lqip    }}
+export type PRODUCTS_BY_VARIANT_QUERY_RESULT = Array<{
   _id: string;
   _type: "product";
   _createdAt: string;
@@ -310,13 +311,39 @@ export type PRODUCT_BY_SLUG_QUERY_RESULT = {
   name?: string;
   slug?: Slug;
   images?: Array<{
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
     _key: string;
+    _type: "image";
+    url: string;
+    lqip: string;
   }>;
+  description?: string;
+  price?: number;
+  discount?: number;
+  categories: Array<string | null> | null;
+  stock?: number;
+  brand?: BrandReference;
+  status?: "hot" | "new" | "sale";
+  variant?: "appliances" | "gadget" | "others" | "refrigerators";
+  isFeatured?: boolean;
+}>;
+
+// Source: sanity/queries/query.ts
+// Variable: PRODUCT_BY_SLUG_QUERY
+// Query: *[_type == "product" && slug.current == $slug] | order(name asc) [0] {    ..., images[] {    _key,    _type,    "url": asset->url,    "lqip": asset->metadata.lqip    }  }
+export type PRODUCT_BY_SLUG_QUERY_RESULT = {
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  images: Array<{
+    _key: string;
+    _type: "image";
+    url: string | null;
+    lqip: string | null;
+  }> | null;
   description?: string;
   price?: number;
   discount?: number;
@@ -333,6 +360,52 @@ export type PRODUCT_BY_SLUG_QUERY_RESULT = {
 } | null;
 
 // Source: sanity/queries/query.ts
+// Variable: CATEGORIES_QUERY
+// Query: *[_type == 'category'] | order(name asc) {    ...,    image {      _key,      _type,      "url": asset->url,      "lqip": asset->metadata.lqip    },    "productCount": count(*[_type == "product" && references(^._id)])}
+export type CATEGORIES_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "category";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  description?: string;
+  range?: number;
+  featured?: boolean;
+  image: {
+    _key: null;
+    _type: "image";
+    url: string | null;
+    lqip: string | null;
+  } | null;
+  productCount: number;
+}>;
+
+// Source: sanity/queries/query.ts
+// Variable: CATEGORIES_WITH_QUANTITY_QUERY
+// Query: *[_type == 'category'][0...$quantity] | order(name asc) {    ...,    image {      _key,      _type,      "url": asset->url,      "lqip": asset->metadata.lqip    },    "productCount": count(*[_type == "product" && references(^._id)])}
+export type CATEGORIES_WITH_QUANTITY_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "category";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  description?: string;
+  range?: number;
+  featured?: boolean;
+  image: {
+    _key: null;
+    _type: "image";
+    url: string | null;
+    lqip: string | null;
+  } | null;
+  productCount: number;
+}>;
+
+// Source: sanity/queries/query.ts
 // Variable: BRAND_QUERY
 // Query: *[_type == "product" && slug.current == $slug]{  "brandName": brand->title  }
 export type BRAND_QUERY_RESULT = Array<{
@@ -344,44 +417,16 @@ export type BRAND_QUERY_RESULT = Array<{
 // Query: *[_type == 'order' && clerkUserId == $userId] | order(orderData desc){...,products[]{  ...,product->}}
 export type MY_ORDERS_QUERY_RESULT = Array<never>;
 
-// Source: sanity/queries/query.ts
-// Variable: PRODUCTS_QUERY
-// Query: *[_type == "product"] | order(name asc){  ...,"categories": categories[]->title}
-export type PRODUCTS_QUERY_RESULT = Array<{
-  _id: string;
-  _type: "product";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  name?: string;
-  slug?: Slug;
-  images?: Array<{
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-    _key: string;
-  }>;
-  description?: string;
-  price?: number;
-  discount?: number;
-  categories: Array<string | null> | null;
-  stock?: number;
-  brand?: BrandReference;
-  status?: "hot" | "new" | "sale";
-  variant?: "appliances" | "gadget" | "others" | "refrigerators";
-  isFeatured?: boolean;
-}>;
-
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type=='brand'] | order(name asc) ": BRANDS_QUERY_RESULT;
-    '*[_type == "product" && slug.current == $slug] | order(name asc) [0]': PRODUCT_BY_SLUG_QUERY_RESULT;
+    '*[_type==\'brand\'] | order(name asc) {\n    ..., \n    image {\n      _key,\n      _type,\n      "url": asset->url,\n      "lqip": asset->metadata.lqip\n    },    \n}': BRANDS_QUERY_RESULT;
+    '*[_type == "product" && variant == $variant][0...$quantity]{\n    ...,\n    "categories": categories[]->title, \n    images[] {\n        _key,\n        _type,\n        "url": asset->url,\n        "lqip": asset->metadata.lqip\n    }\n}': PRODUCTS_BY_VARIANT_QUERY_RESULT;
+    '*[_type == "product" && slug.current == $slug] | order(name asc) [0] {\n    ..., images[] {\n    _key,\n    _type,\n    "url": asset->url,\n    "lqip": asset->metadata.lqip\n    }\n  }': PRODUCT_BY_SLUG_QUERY_RESULT;
+    '*[_type == \'category\'] | order(name asc) {\n    ...,\n    image {\n      _key,\n      _type,\n      "url": asset->url,\n      "lqip": asset->metadata.lqip\n    },\n    "productCount": count(*[_type == "product" && references(^._id)])\n}': CATEGORIES_QUERY_RESULT;
+    '*[_type == \'category\'][0...$quantity] | order(name asc) {\n    ...,\n    image {\n      _key,\n      _type,\n      "url": asset->url,\n      "lqip": asset->metadata.lqip\n    },\n    "productCount": count(*[_type == "product" && references(^._id)])\n}': CATEGORIES_WITH_QUANTITY_QUERY_RESULT;
     '*[_type == "product" && slug.current == $slug]{\n  "brandName": brand->title\n  }': BRAND_QUERY_RESULT;
     "*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){\n...,products[]{\n  ...,product->\n}\n}": MY_ORDERS_QUERY_RESULT;
-    '*[_type == "product"] | order(name asc){\n  ...,"categories": categories[]->title\n}': PRODUCTS_QUERY_RESULT;
   }
 }

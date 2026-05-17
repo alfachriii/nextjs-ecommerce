@@ -1,21 +1,11 @@
 import { client } from "./lib/client";
+import { PRODUCTS_BY_VARIANT_QUERY } from "./queries/query";
 
 const getProductsByVariant = async (variant: string, quantity: number) => {
-    // const query = `*[_type == "product" && variant == $variant][0...$quantity]{
-    //   ...,"categories": categories[]->title
-    // }`
-    const query = `*[_type == "product" && variant == $variant][0...$quantity]{
-      ...,"categories": categories[]->title, images[] {
-          _key,
-          _type,
-          "url": asset->url,
-          "lqip": asset->metadata.lqip
-          }
-        }`
 
     try {
         const data = await client.fetch(
-            query,
+            PRODUCTS_BY_VARIANT_QUERY,
             { variant, quantity }
         )
         return data ?? []

@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import HomeTabber from './HomeTabber'
 import ProductCard from './ProductCard'
 import { getProductsByVariant } from '@/sanity/services'
-import { Product } from '@/sanity.types'
+import { PRODUCTS_BY_VARIANT_QUERY_RESULT } from '@/sanity.types'
 
 const ProductGrid = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<PRODUCTS_BY_VARIANT_QUERY_RESULT>([]);
   const [selectedTab, setSeletectedTab] = useState<string>("gadget");
   const [loading, setLoading] = useState<boolean>(true);
 

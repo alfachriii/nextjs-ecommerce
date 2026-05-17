@@ -1,13 +1,21 @@
-import productImage from "@/images/product/product_1.png";
 import Image from "next/image";
 import PriceView from "./PriceView";
 import { Button } from "./ui/button";
 import { IoCartOutline } from "react-icons/io5";
 import Link from "next/link";
-import { Product as SanityProduct } from "@/sanity.types";
+import { PRODUCTS_BY_VARIANT_QUERY_RESULT } from "@/sanity.types";
 import { generateImageUrl, limitString } from "@/lib/utils";
 
-const ProductCard = ({ product }: { product: SanityProduct} ) => {
+type ProductResult = Omit<PRODUCTS_BY_VARIANT_QUERY_RESULT[0], "images"> & {
+    images?: Array<{
+      _key: string;
+      _type: "image";
+      url: string;
+      lqip: string;
+    }>;
+}
+
+const ProductCard = ({ product }: { product: ProductResult} ) => {
     
     return (
       <article className='w-full h-fit border-2 border-accent-foreground/20 rounded-lg flex shrink-0 flex-col group'>

@@ -1,20 +1,9 @@
 'use client'
 
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
-import { Label } from "../ui/label"
 import { useState } from "react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import Separator from "../ui/separator"
-import { Span } from "next/dist/trace"
-
-const priceArray = [
-  { title: "Under Rp1.000.000", value: "0-1000000" },
-  { title: "Rp1.000.000 - Rp2.000.000", value: "1000000-2000000" },
-  { title: "Rp2.000.000 - Rp4.000.000", value: "2000000-4000000" },
-  { title: "Rp4.000.000 - Rp5.000.000", value: "4000000-5000000" },
-  { title: "Over Rp5.000.000", value: "5000000-50000000" },
-];
 
 const PriceList = () => {
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
