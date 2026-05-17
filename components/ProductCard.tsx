@@ -6,29 +6,20 @@ import Link from "next/link";
 import { PRODUCTS_BY_VARIANT_QUERY_RESULT } from "@/sanity.types";
 import { generateImageUrl, limitString } from "@/lib/utils";
 
-type ProductResult = Omit<PRODUCTS_BY_VARIANT_QUERY_RESULT[0], "images"> & {
-    images?: Array<{
-      _key: string;
-      _type: "image";
-      url: string;
-      lqip: string;
-    }>;
-}
-
-const ProductCard = ({ product }: { product: ProductResult} ) => {
+const ProductCard = ({ product }: { product: PRODUCTS_BY_VARIANT_QUERY_RESULT[0]} ) => {
     
     return (
       <article className='w-full h-fit border-2 border-accent-foreground/20 rounded-lg flex shrink-0 flex-col group'>
           <Link href={`/product/${product?.slug?.current}`}>
-              {product?.images && product.images.length > 0 && (
+              {product?.images && product?.images[0].url && product?.images[0].lqip && (
                   <div className='aspect-w-2 aspect-h-3 shrink-0 bg-secondary rounded-tl-lg rounded-tr-lg overflow-hidden'>
                       <Image 
-                          src={generateImageUrl(product.images[0].url, 600)} 
+                          src={generateImageUrl(product?.images[0].url, 600)} 
                           alt={`${product.name} image`} 
                           width={600}
                           height={600}
                           placeholder="blur"
-                          blurDataURL={product.images[0].lqip}
+                          blurDataURL={product?.images[0].lqip}
                           className='w-full h-full scale-115 object-cover hover:cursor-pointer group-hover:scale-125 transition-transform hoverEffect' />
                   </div>
               )}

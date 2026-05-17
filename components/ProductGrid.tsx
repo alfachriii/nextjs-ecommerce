@@ -6,8 +6,17 @@ import ProductCard from './ProductCard'
 import { getProductsByVariant } from '@/sanity/services'
 import { PRODUCTS_BY_VARIANT_QUERY_RESULT } from '@/sanity.types'
 
+type ProductsResult = Omit<PRODUCTS_BY_VARIANT_QUERY_RESULT, "images"> & {
+  images?: Array<{
+    _key: string;
+    _type: "image";
+    url: string;
+    lqip: string;
+  }>;
+}
+
 const ProductGrid = () => {
-  const [products, setProducts] = useState<PRODUCTS_BY_VARIANT_QUERY_RESULT>([]);
+  const [products, setProducts] = useState<ProductsResult>([]);
   const [selectedTab, setSeletectedTab] = useState<string>("gadget");
   const [loading, setLoading] = useState<boolean>(true);
 

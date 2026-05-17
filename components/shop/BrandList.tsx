@@ -5,17 +5,24 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Label } from "../ui/label"
 import { useState } from "react"
 import { Button } from "../ui/button"
+import { BRANDS_QUERY_RESULT } from "@/sanity.types"
 
-const BrandList = () => {
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
+interface Props {
+  brands: BRANDS_QUERY_RESULT;
+  selectedBrand: string | null;
+  setSelectedBrand: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+const BrandList = ({ brands, selectedBrand, setSelectedBrand }: Props) => {
+
   return (
     <div className="w-full flex flex-col">
       <h2 className='font-semibold'>Brands</h2>
       <RadioGroup value={selectedBrand} className="mt-4">
-        {brandData.map((brand, index) => (
-          <div className="flex items-center gap-3 hover:cursor-pointer hover:text-primary" key={index} onClick={() => setSelectedBrand(brand.href as string)}>
-            <RadioGroupItem value={brand.href as string} id={brand.href} />
-            <Label htmlFor={brand.href} className={`hover:cursor-pointer ${selectedBrand == brand.href as string && "text-primary"}`}>{brand.title}</Label>
+        {brands.map((brand, index) => (
+          <div className="flex items-center gap-3 hover:cursor-pointer hover:text-primary" key={index} onClick={() => setSelectedBrand(brand?.slug?.current as string)}>
+            <RadioGroupItem value={brand.title as string} id={brand._id} />
+            <Label htmlFor={brand?.slug?.current} className={`hover:cursor-pointer ${selectedBrand == brand?.slug?.current as string && "text-primary"}`}>{brand.title}</Label>
           </div>
         ))}
       </RadioGroup>

@@ -6,4 +6,7 @@ import { client } from './client'
 
 export const { sanityFetch, SanityLive } = defineLive({
   client,
+  fetchOptions: {
+    revalidate: 0,
+  },
 });

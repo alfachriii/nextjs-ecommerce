@@ -1,10 +1,13 @@
 import Shop from "@/components/Shop"
+import { getAllBrands, getCategories } from "@/sanity/queries";
 
+const ShopPage = async () => {
+  const categories = await getCategories();
+  const brands = await getAllBrands();
 
-const ShopPage = () => {
   return (
     <main className="w-full min-h-screen my-24">
-        <Shop />
+        <Shop categories={categories} brands={brands} />
     </main>
   )
 }

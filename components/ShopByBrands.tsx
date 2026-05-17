@@ -1,12 +1,14 @@
 import Link from 'next/link'
 import { Button } from './ui/button'
 import Image from 'next/image'
-import brandLogo from "@/images/brands/brand_1.png"
 import ServicesBanner from './ServicesBanner'
 import { getAllBrands } from '@/sanity/queries'
+import { BRANDS_QUERY_RESULT } from '@/sanity.types'
+import { generateImageUrl } from '@/lib/utils'
 
 const ShopByBrands = async () => {
-  const brands = await getAllBrands();
+  const brands: BRANDS_QUERY_RESULT = await getAllBrands();
+
   return (
     <section className='w-full flex flex-col bg-secondary rounded-xl p-8 gap-12 mb-8'>
       <div className='flex w-full justify-between'>
@@ -16,11 +18,19 @@ const ShopByBrands = async () => {
         </Link>
       </div>
       <div className='grid grid-cols-8 w-full gap-4'>
-        <Link href="/">
+        {brands.map((brand) => (
+        <Link href="/" key={brand._id}>
           <div className='w-full aspect-w-4 aspect-h-3 bg-background py-2 rounded-md hover:shadow-2xl shadow-muted hoverEffect'>
-            <Image src={brandLogo} alt='brand logo' />
+            {brand.image?.url && (
+              <Image
+                src={generateImageUrl(brand.image?.url, 200)}
+                width={200}
+                height={200}
+                alt='brand logo' />
+            )}
           </div>
         </Link>
+        ))}
       </div>
       <ServicesBanner />
     </section>

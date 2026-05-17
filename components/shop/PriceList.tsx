@@ -5,8 +5,12 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import Separator from "../ui/separator"
 
-const PriceList = () => {
-  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
+interface Props {
+  selectedPrice: string | null;
+  setSelectedPrice: React.Dispatch<React.SetStateAction<string | null>>
+}
+
+const PriceList = ({ selectedPrice, setSelectedPrice }: Props) => {
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
 

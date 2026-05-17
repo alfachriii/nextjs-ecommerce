@@ -1,5 +1,5 @@
 import { client } from "./lib/client";
-import { PRODUCTS_BY_VARIANT_QUERY } from "./queries/query";
+import { PRODUCTS_BY_FILTER_QUERY, PRODUCTS_BY_VARIANT_QUERY } from "./queries/query";
 
 const getProductsByVariant = async (variant: string, quantity: number) => {
 
@@ -15,6 +15,21 @@ const getProductsByVariant = async (variant: string, quantity: number) => {
     }
 }
 
+const getProductByFilter = async (params: object) => {
+    try {
+        const data = await client.fetch(
+            PRODUCTS_BY_FILTER_QUERY,
+            params,
+            { next: { revalidate: 0 } }
+        )
+        return data ?? []
+    } catch (error) {
+        console.log("Error fetching products by filter: ", error);
+        return []
+    }
+}
+
 export {
-    getProductsByVariant
+    getProductsByVariant,
+    getProductByFilter
 }
