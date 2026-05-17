@@ -122,12 +122,10 @@ export type Product = {
   name?: string;
   slug?: Slug;
   images?: Array<{
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
     _key: string;
+    _type: "image";
+    url: string;  
+    lqip: string;  
   }>;
   description?: string;
   price?: number;

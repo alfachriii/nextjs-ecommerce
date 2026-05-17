@@ -3,7 +3,14 @@ import { defineQuery } from "next-sanity";
 const BRANDS_QUERY = defineQuery(`*[_type=='brand'] | order(name asc) `);
 
 const PRODUCT_BY_SLUG_QUERY = defineQuery(
-  `*[_type == "product" && slug.current == $slug] | order(name asc) [0]`
+  `*[_type == "product" && slug.current == $slug] | order(name asc) [0] {
+    ..., images[] {
+    _key,
+    _type,
+    "url": asset->url,
+    "lqip": asset->metadata.lqip
+    }
+  }`
 );
 
 const BRAND_QUERY = defineQuery(`*[_type == "product" && slug.current == $slug]{

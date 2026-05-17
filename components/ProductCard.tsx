@@ -4,23 +4,23 @@ import PriceView from "./PriceView";
 import { Button } from "./ui/button";
 import { IoCartOutline } from "react-icons/io5";
 import Link from "next/link";
-import { Product } from "@/sanity.types";
-import { urlFor } from "@/sanity/lib/image";
-import { limitString } from "@/lib/utils";
+import { Product as SanityProduct } from "@/sanity.types";
+import { generateImageUrl, limitString } from "@/lib/utils";
 
-const ProductCard = ({ product }: { product: Product} ) => {
+const ProductCard = ({ product }: { product: SanityProduct} ) => {
     
     return (
       <article className='w-full h-fit border-2 border-accent-foreground/20 rounded-lg flex shrink-0 flex-col group'>
           <Link href={`/product/${product?.slug?.current}`}>
-              {product?.images && (
+              {product?.images && product.images.length > 0 && (
                   <div className='aspect-w-2 aspect-h-3 shrink-0 bg-secondary rounded-tl-lg rounded-tr-lg overflow-hidden'>
                       <Image 
-                          src={urlFor(product.images[0]).url()} 
+                          src={generateImageUrl(product.images[0].url, 600)} 
                           alt={`${product.name} image`} 
                           width={600}
                           height={600}
-                          loading="lazy"
+                          placeholder="blur"
+                          blurDataURL={product.images[0].lqip}
                           className='w-full h-full scale-115 object-cover hover:cursor-pointer group-hover:scale-125 transition-transform hoverEffect' />
                   </div>
               )}

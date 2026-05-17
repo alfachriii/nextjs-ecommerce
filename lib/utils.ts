@@ -11,3 +11,7 @@ export const limitString = (str: string, limit: number) => {
   }
   return str;
 }
+
+export const generateImageUrl = (url: string, width: number) => {
+  return `${url}?w=${width}&auto=format`
+}
