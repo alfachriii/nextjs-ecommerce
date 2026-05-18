@@ -140,7 +140,7 @@ export type Product = {
   stock?: number;
   brand?: BrandReference;
   status?: "new" | "hot" | "sale";
-  variant?: "gadget" | "appliances" | "refrigerators" | "others";
+  variant?: "gadget" | "appliances" | "electronics" | "others";
   isFeatured?: boolean;
 };
 
@@ -323,7 +323,7 @@ export type PRODUCTS_BY_VARIANT_QUERY_RESULT = Array<{
   stock?: number;
   brand?: BrandReference;
   status?: "hot" | "new" | "sale";
-  variant?: "appliances" | "gadget" | "others" | "refrigerators";
+  variant?: "appliances" | "electronics" | "gadget" | "others";
   isFeatured?: boolean;
 }>;
 
@@ -351,13 +351,13 @@ export type PRODUCTS_BY_FILTER_QUERY_RESULT = Array<{
   stock?: number;
   brand?: BrandReference;
   status?: "hot" | "new" | "sale";
-  variant?: "appliances" | "gadget" | "others" | "refrigerators";
+  variant?: "appliances" | "electronics" | "gadget" | "others";
   isFeatured?: boolean;
 }>;
 
 // Source: sanity/queries/query.ts
 // Variable: PRODUCT_BY_SLUG_QUERY
-// Query: *[_type == "product" && slug.current == $slug] | order(name asc) [0] {    ..., images[] {    _key,    _type,    "url": asset->url,    "lqip": asset->metadata.lqip    }  }
+// Query: *[_type == "product" && slug.current == $slug] | order(name asc) [0] {    ...,    "brandName": brand->title,    images[] {    _key,    _type,    "url": asset->url,    "lqip": asset->metadata.lqip    }  }
 export type PRODUCT_BY_SLUG_QUERY_RESULT = {
   _id: string;
   _type: "product";
@@ -383,8 +383,9 @@ export type PRODUCT_BY_SLUG_QUERY_RESULT = {
   stock?: number;
   brand?: BrandReference;
   status?: "hot" | "new" | "sale";
-  variant?: "appliances" | "gadget" | "others" | "refrigerators";
+  variant?: "appliances" | "electronics" | "gadget" | "others";
   isFeatured?: boolean;
+  brandName: string | null;
 } | null;
 
 // Source: sanity/queries/query.ts
@@ -452,7 +453,7 @@ declare module "@sanity/client" {
     '*[_type==\'brand\'] | order(name asc) {\n    ..., \n    image {\n      _key,\n      _type,\n      "url": asset->url,\n      "lqip": asset->metadata.lqip\n    },    \n}': BRANDS_QUERY_RESULT;
     '*[_type == "product" && variant == $variant][0...$quantity]{\n    ...,\n    "categories": categories[]->title, \n    images[] {\n        _key,\n        _type,\n        "url": asset->url,\n        "lqip": asset->metadata.lqip\n    }\n}': PRODUCTS_BY_VARIANT_QUERY_RESULT;
     '*[_type == \'product\' \n    && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))\n    && (!defined($selectedBrand) || references(*[_type == "brand" && slug.current == $selectedBrand]._id))\n    && price >= $minPrice && price <= $maxPrice] \n      | order(name asc) {\n            ...,\n            "categories": categories[]->title,\n            images[] {\n            _key,\n            _type,\n            "url": asset->url,\n            "lqip": asset->metadata.lqip\n        } \n    }': PRODUCTS_BY_FILTER_QUERY_RESULT;
-    '*[_type == "product" && slug.current == $slug] | order(name asc) [0] {\n    ..., images[] {\n    _key,\n    _type,\n    "url": asset->url,\n    "lqip": asset->metadata.lqip\n    }\n  }': PRODUCT_BY_SLUG_QUERY_RESULT;
+    '*[_type == "product" && slug.current == $slug] | order(name asc) [0] {\n    ...,\n    "brandName": brand->title,\n    images[] {\n    _key,\n    _type,\n    "url": asset->url,\n    "lqip": asset->metadata.lqip\n    }\n  }': PRODUCT_BY_SLUG_QUERY_RESULT;
     '*[_type == \'category\'] | order(name asc) {\n    ...,\n    image {\n      _key,\n      _type,\n      "url": asset->url,\n      "lqip": asset->metadata.lqip\n    },\n    "productCount": count(*[_type == "product" && references(^._id)])\n}': CATEGORIES_QUERY_RESULT;
     '*[_type == \'category\'][0...$quantity] | order(name asc) {\n    ...,\n    image {\n      _key,\n      _type,\n      "url": asset->url,\n      "lqip": asset->metadata.lqip\n    },\n    "productCount": count(*[_type == "product" && references(^._id)])\n}': CATEGORIES_WITH_QUANTITY_QUERY_RESULT;
     '*[_type == "product" && slug.current == $slug]{\n  "brandName": brand->title\n  }': BRAND_QUERY_RESULT;

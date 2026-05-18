@@ -15,7 +15,7 @@ import Counter from '@/components/Counter'
 import { getProductBySlug } from '@/sanity/queries'
 import { notFound } from 'next/navigation'
 import ImageView from '@/components/ImageView'
-import { Product, PRODUCT_BY_SLUG_QUERY_RESULT } from '@/sanity.types'
+import { PRODUCT_BY_SLUG_QUERY_RESULT } from '@/sanity.types'
 
 // const ProductPage = async () => {
 const ProductPage = async ({ params }: { params: Promise<{ slug: string}> }) => {
@@ -53,7 +53,7 @@ const ProductPage = async ({ params }: { params: Promise<{ slug: string}> }) => 
                               <Link href="/" className='text-lg font-mono'>ADD TO CART</Link>
                           </Button>
                       </div>
-                      <ProductCharacteristics />
+                      <ProductCharacteristics product={product} />
                       <Separator />
                       <div className='flex w-full mt-8'>
                           <span className='shrink w-full flex gap-2 items-center hover:text-red-500 hoverEffect'>

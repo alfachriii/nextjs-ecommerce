@@ -25,7 +25,7 @@ const ProductCard = ({ product }: { product: PRODUCTS_BY_VARIANT_QUERY_RESULT[0]
               )}
               <div className="w-full h-fit flex flex-col p-4 gap-2">
                   <p className='text-xs font-normal text-muted-foreground'>
-                      {product?.categories?.map((cat) => cat).join(", ")}
+                      {product?.categories?.map((cat) => cat).join(", ").toLocaleUpperCase()}
                   </p>
                   {product?.name && (
                     <h3 className='text-md font-bold text-foreground'>{limitString(product?.name, 20)}</h3>

@@ -38,7 +38,9 @@ const PRODUCTS_BY_FILTER_QUERY = defineQuery(`*[_type == 'product'
 
 const PRODUCT_BY_SLUG_QUERY = defineQuery(
   `*[_type == "product" && slug.current == $slug] | order(name asc) [0] {
-    ..., images[] {
+    ...,
+    "brandName": brand->title,
+    images[] {
     _key,
     _type,
     "url": asset->url,

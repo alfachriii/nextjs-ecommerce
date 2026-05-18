@@ -33,7 +33,7 @@ const ProductGrid = () => {
   
   return (
     <div className='w-full flex flex-col gap-8 mb-8'>
-        <HomeTabber selectedTab={selectedTab} onTabSelect={(tab) => setSeletectedTab(tab)} />
+        <HomeTabber selectedTab={selectedTab} setSelectedTab={setSeletectedTab} />
         <div className='grid grid-cols-5 gap-4 w-full'>
           {loading ? (
             <span>LOADING BOSSS..</span>

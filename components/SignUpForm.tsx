@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { FaGithub } from 'react-icons/fa'
 import { FcGoogle } from "react-icons/fc";
@@ -8,11 +8,13 @@ import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label';
 import { Input } from './ui/input';
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 import Link from 'next/link';
+import { signUp } from '@/app/actions/auth';
 
 const SignUpForm = () => {
-    const [isPassVisible, setIsPassVisible] = useState<Boolean>(false);
+    const [state, action, pending] = useActionState(signUp, undefined)
+    const [isPassVisible, setIsPassVisible] = useState<boolean>(false);
 
   return (
     <Card className='w-full'>
@@ -36,12 +38,14 @@ const SignUpForm = () => {
             </div>
         </CardHeader>
         <CardContent>
-            <form>
+            <form action={action}>
                 <div className='flex flex-col gap-6'>
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input
+                      {state?.errors?.email && <p>{state.errors.email}</p>}
+                      <input
                         id="email"
+                        name="email"
                         type="email"
                         placeholder="m@example.com"
                         required
@@ -58,9 +62,20 @@ const SignUpForm = () => {
                         </a>
                       </div>
                       <div className='relative'>
-                        <Input 
+                        {state?.errors?.password && (
+                          <div>
+                            <p>Password must:</p>
+                            <ul>
+                              {state.errors.password.map((error) => (
+                                <li key={error}>- {error}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        <input 
                           className='pr-12'
                           id="password" 
+                          name="password"
                           type={(isPassVisible === true) ? "text" : "password"}
                           required />
                         <LuEye 
@@ -72,13 +87,13 @@ const SignUpForm = () => {
                       </div>
                     </div>
                 </div>
+                <Button type='submit' className="w-full mt-8 hover:cursor-pointer" size="lg">
+                    Continue
+                    <IoMdArrowDropright />
+                </Button>
             </form>
         </CardContent>
         <CardFooter className='w-full flex flex-col gap-4'>
-            <Button className="w-full hover:cursor-pointer" size="lg">
-                Continue
-                <IoMdArrowDropright />
-            </Button>
             <p className='flex gap-2 text-secondary-foreground'>
                 Already have an account? 
                 <Link href="/signin" className='font-medium'>Sign in</Link>

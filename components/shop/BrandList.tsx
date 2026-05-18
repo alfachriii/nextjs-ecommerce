@@ -21,7 +21,7 @@ const BrandList = ({ brands, selectedBrand, setSelectedBrand }: Props) => {
       <RadioGroup value={selectedBrand} className="mt-4">
         {brands.map((brand, index) => (
           <div className="flex items-center gap-3 hover:cursor-pointer hover:text-primary" key={index} onClick={() => setSelectedBrand(brand?.slug?.current as string)}>
-            <RadioGroupItem value={brand.title as string} id={brand._id} />
+            <RadioGroupItem value={brand.slug?.current as string} id={brand.slug?.current} />
             <Label htmlFor={brand?.slug?.current} className={`hover:cursor-pointer ${selectedBrand == brand?.slug?.current as string && "text-primary"}`}>{brand.title}</Label>
           </div>
         ))}

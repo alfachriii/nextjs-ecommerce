@@ -72,13 +72,13 @@ const SignInForm = () => {
                       </div>
                     </div>
                 </div>
+                <Button type='submit' className="w-full mt-8 hover:cursor-pointer" size="lg">
+                    Continue
+                    <IoMdArrowDropright />
+                </Button>
             </form>
         </CardContent>
         <CardFooter className='w-full flex flex-col gap-4'>
-            <Button className="w-full hover:cursor-pointer" size="lg">
-                Continue
-                <IoMdArrowDropright />
-            </Button>
             <p className='flex gap-2 text-secondary-foreground'>
                 Don't have an account? 
                 <Link href="/signup" className='font-medium'>Sign up</Link>

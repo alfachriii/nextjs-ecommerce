@@ -16,7 +16,7 @@ const HomeCategories = async () => {
               <div key={category._id} className='w-full p-4 gap-4 flex items-center bg-secondary'>
                   <div className='aspect-w-2 aspect-h-3 w-3/12 border-2 border-destructive/30 hover:border-destructive/70 hoverEffect rounded-md group'>
                       {category?.image && category.image.url && (
-                        <Link href="/">
+                        <Link href={`/shop?category=${category.slug?.current}`}>
                             <Image 
                                 src={generateImageUrl(category.image?.url, 300)} 
                                 alt='categories'

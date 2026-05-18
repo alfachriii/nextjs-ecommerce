@@ -19,7 +19,7 @@ const ShopByBrands = async () => {
       </div>
       <div className='grid grid-cols-8 w-full gap-4'>
         {brands.map((brand) => (
-        <Link href="/" key={brand._id}>
+        <Link href={`/shop?brand=${brand.slug?.current}`} key={brand._id}>
           <div className='w-full aspect-w-4 aspect-h-3 bg-background py-2 rounded-md hover:shadow-2xl shadow-muted hoverEffect'>
             {brand.image?.url && (
               <Image
