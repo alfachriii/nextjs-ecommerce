@@ -8,11 +8,21 @@ import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label';
 import { Input } from './ui/input';
-import { useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { signIn } from '@/app/actions/auth';
+import { redirect } from 'next/navigation';
 
 const SignInForm = () => {
-    const [isPassVisible, setIsPassVisible] = useState<Boolean>(false);
+  const [state, action, pending] = useActionState(signIn, undefined)
+  const [isPassVisible, setIsPassVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (state?.userData) {
+      localStorage.setItem("user", JSON.stringify(state?.userData));
+      redirect("/")
+    }
+  }, [state])
 
   return (
     <Card className='w-full'>
@@ -36,12 +46,14 @@ const SignInForm = () => {
             </div>
         </CardHeader>
         <CardContent>
-            <form>
+            <form action={action}>
                 <div className='flex flex-col gap-6'>
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
+                      {state?.errors?.email && <p>{state.errors.email}</p>}
                       <Input
                         id="email"
+                        name="email"
                         type="email"
                         placeholder="m@example.com"
                         required
@@ -58,9 +70,20 @@ const SignInForm = () => {
                         </a>
                       </div>
                       <div className='relative'>
+                        {state?.errors?.password && (
+                          <div>
+                            <p>Password must:</p>
+                            <ul>
+                              {state.errors.password.map((error) => (
+                                <li key={error}>- {error}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                         <Input 
                           className='pr-12'
-                          id="password" 
+                          id="password"
+                          name="password"
                           type={(isPassVisible === true) ? "text" : "password"}
                           required />
                         <LuEye 
@@ -72,6 +95,7 @@ const SignInForm = () => {
                       </div>
                     </div>
                 </div>
+                {state?.messages && <p>{state.messages}</p>}
                 <Button type='submit' className="w-full mt-8 hover:cursor-pointer" size="lg">
                     Continue
                     <IoMdArrowDropright />

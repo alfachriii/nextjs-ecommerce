@@ -1,17 +1,17 @@
 import { createClient } from 'next-sanity'
 
-import { apiVersion, dataset, projectId } from '../env'
+import { apiVersion, publicDataset, projectId, privateDataset } from '../env'
 
 export const client = createClient({
   projectId,
-  dataset,
+  dataset: publicDataset,
   apiVersion,
   useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
 })
 
 export const secureClient = createClient({
   projectId,
-  dataset: process.env.SANITY_PRIVATE_DATASET,
+  dataset: privateDataset,
   apiVersion,
   useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
   //  revalidation

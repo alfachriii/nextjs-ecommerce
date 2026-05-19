@@ -87,6 +87,7 @@ const SignUpForm = () => {
                       </div>
                     </div>
                 </div>
+                {state?.messages && <p>{state.messages}</p>}
                 <Button type='submit' className="w-full mt-8 hover:cursor-pointer" size="lg">
                     Continue
                     <IoMdArrowDropright />

@@ -1,6 +1,11 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+export type userData = {
+    email: string,
+    profileUrl?: string,
+} | null
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }

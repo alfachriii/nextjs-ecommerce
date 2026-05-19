@@ -1,0 +1,55 @@
+"use client"
+
+import { userData } from "@/lib/utils";
+import Image from "next/image";
+import { useState } from "react";
+import dummyProfile from "@/images/dummy_profile.webp"
+import Separator from "./ui/separator";
+import { PiSignOut } from "react-icons/pi";
+import { logout } from "@/app/actions/auth";
+import { redirect } from "next/navigation";
+
+const UserButton = () => {
+    const [isUserModal, setIsUserModal] = useState<boolean>(false);
+    const [logoutLoading, setLogoutLoading] = useState<boolean>(false);
+    const user = localStorage.getItem("user");
+    if (!user) return null;
+    const userData = JSON.parse(user) as userData; 
+
+    const handleLogout = async () => {
+        setLogoutLoading(true);
+        await logout();
+        localStorage.removeItem("user");
+        setLogoutLoading(false)
+        redirect("/");
+    }
+
+    return (
+      <>
+        <div className="aspect-w-1 aspect-h-1 w-8 rounded-full hover:cursor-pointer" onClick={() => setIsUserModal(true)}>
+            <Image src={userData?.profileUrl ?? dummyProfile} alt={userData?.email || "profile"} className="w-full object-cover rounded-full"/>
+        </div>
+        {isUserModal && (
+            <>
+                <div className="absolute z-50 top-10 right-0 bg-background border-2 border-secondary-foreground/30 flex flex-col rounded-lg">
+                    <div className="flex gap-4 items-center p-4 pr-16">
+                        <div className="aspect-w-1 aspect-h-1 w-10 rounded-full">
+                            <Image src={userData?.profileUrl ?? dummyProfile} alt={userData?.email || "profile"} className="w-full object-cover rounded-full"/>
+                        </div>
+                        <p>{userData?.email}</p>
+                    </div>
+                    <Separator />
+                    <button className="flex gap-4 p-4 items-center hover:cursor-pointer" onClick={handleLogout} disabled={logoutLoading}>
+                        <PiSignOut className="text-xl" />
+                        <p className="text-secondary-foreground">Sign Out</p>
+                    </button>
+                </div>
+                <div className="absolute z-40 w-screen h-screen -top-4 -right-32 p-8" onClick={() => setIsUserModal(false)}>
+                </div>
+            </>
+        )}
+      </>
+    )
+}
+
+export default UserButton

@@ -1,14 +1,26 @@
 "use server";
 import { FormState, SignupFormSchema } from "@/lib/definitions"
-import { createSession } from "@/lib/session";
+import { comparePassword, createSession, deleteSession, hashPassword } from "@/lib/session";
 import { secureClient } from "@/sanity/lib/client";
 import { redirect } from "next/navigation";
-import bcrypt from "bcrypt"
 
-const isExsistingUser = async (email: string) => {
-    const user = await secureClient.fetch(`*[_type == "user" && email == $email][0]`, { email });
-    if (user && user?._id) return true;
-    return false
+
+export const getUser = async (email: string, password?: string) => {
+    const query = password 
+                    ? `*[_type == "user" && email == $email && password == $password][0]` 
+                    : `*[_type == "user" && email == $email][0]`
+
+    try {
+        const user = await secureClient.fetch(
+            query,
+            password ? { email, password } : { email } 
+        );
+        return user;
+    } catch (error) {
+        console.log("Error fetching user: ", error);
+        return null;
+    }
+    
 }
 
 const createNewUser = async (email: string, hashedPassword: string) => {
@@ -16,7 +28,7 @@ const createNewUser = async (email: string, hashedPassword: string) => {
         const newUser = await secureClient.create({
             _type: "user",
             email,
-            hashedPassword
+            password: hashedPassword
         })
         return newUser
     } catch (error) {
@@ -37,9 +49,10 @@ export const signUp = async (state: FormState, formData: FormData) => {
     }
 
     const { email, password } = validatedFields.data;
-    const hashedPassword = await bcrypt.hash(password, 11);
+    const hashedPassword = await hashPassword(password);
+    const user = await getUser(email);
 
-    if (await isExsistingUser(email)) {
+    if (user?._id) {
         return { 
             messages: "You already have an account!"
         }
@@ -54,3 +67,38 @@ export const signUp = async (state: FormState, formData: FormData) => {
 
     redirect("/")
 } 
+
+export const signIn = async (state: FormState, formData: FormData) => {
+    const validatedFields = SignupFormSchema.safeParse({
+      email: formData.get('email'),
+      password: formData.get('password'),
+    })
+  
+    if (!validatedFields.success && !validatedFields.data) {
+      return {
+        errors: validatedFields.error.flatten().fieldErrors,
+      }
+    }
+
+    const { email, password } = validatedFields.data;
+    const hashedPassword = await hashPassword(password);
+    const user = await getUser(email);
+    const isMatch = await comparePassword(password, hashedPassword);
+
+    if (!isMatch) return {
+        messages: "Invalid credentials"
+    }
+
+    await createSession(user?._id);
+
+    return {
+        userData: {
+            email: email,
+            profileUrl: user?.image
+        }
+    }
+}
+
+export async function logout() {
+  await deleteSession();
+}

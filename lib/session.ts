@@ -1,10 +1,20 @@
 "use server";
+
 import { SignJWT, jwtVerify } from 'jose'
 import { SessionPayload } from '@/lib/definitions'
 import { cookies } from 'next/headers'
+import bcrypt from "bcrypt"
  
 const secretKey = process.env.SESSION_SECRET
 const encodedKey = new TextEncoder().encode(secretKey)
+
+export const hashPassword = async (password: string) => {
+    return await bcrypt.hash(password, 11);
+}
+
+export const comparePassword = async (password: string, hashedPassword: string) => {
+    return await bcrypt.compare(password, hashedPassword);
+}
  
 export async function encrypt(payload: SessionPayload) {
   return new SignJWT(payload)
