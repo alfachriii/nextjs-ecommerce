@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
-export type userData = {
+export type UserData = {
     email: string,
     profileUrl?: string,
 } | null

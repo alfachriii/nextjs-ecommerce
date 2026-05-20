@@ -12,7 +12,7 @@ import { decrypt } from '@/lib/session'
 const Header = async () => {
     let session = null;
     const cookie = (await cookies()).get('session')?.value;
-    
+
     if (cookie) {
       session = await decrypt(cookie);
     }

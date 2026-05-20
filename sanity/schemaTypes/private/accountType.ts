@@ -3,12 +3,9 @@ export const accountType = {
   title: 'Account',
   type: 'document',
   fields: [
-    { name: 'userId', type: 'string' },
-    { name: 'providerId', type: 'string' },
-    { name: 'accountId', type: 'string' },
-    { name: 'accessToken', type: 'string' },
-    { name: 'refreshToken', type: 'string' },
-    { name: 'idToken', type: 'string' },
-    { name: 'expiresAt', type: 'number' },
+    { name: 'userId', type: 'string'},
+    { name: 'accountId', type: 'string'},
+    { name: 'email', type: 'string'},
+    { name: 'image', type: 'string'}
   ],
 };

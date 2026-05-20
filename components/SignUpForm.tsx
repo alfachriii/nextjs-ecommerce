@@ -11,6 +11,8 @@ import { Input } from './ui/input';
 import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { signUp } from '@/app/actions/auth';
+import FormErrorMessages from './FormErrorMessages';
+import Loading from './Loading';
 
 const SignUpForm = () => {
     const [state, action, pending] = useActionState(signUp, undefined)
@@ -18,18 +20,23 @@ const SignUpForm = () => {
 
   return (
     <Card className='w-full'>
+        {pending && <Loading />}
         <CardHeader className='w-full flex flex-col items-center'>
             <CardTitle className='text-2xl font-bold'>Create your account</CardTitle>
             <CardDescription>Welcome! Please fill in the details to get started.</CardDescription>
             <div className='w-full flex justify-center gap-4 my-4'>
-                <Button variant="outline" className="grow">
-                    <FaGithub />
-                    Github
-                </Button>
-                <Button variant="outline" className="grow">
-                    <FcGoogle />
-                    Google
-                </Button>
+                <Link href="/api/auth/github" className="grow">
+                  <Button variant="outline" className="w-full">
+                        <FaGithub />
+                        Github
+                  </Button>
+                </Link>
+                <Link href="/api/auth/google" className="grow">
+                  <Button variant="outline" className="w-full">
+                        <FcGoogle />
+                        Google
+                  </Button>
+                </Link>
             </div>
             <div className='w-full flex items-center gap-4'>
                 <span className='grow border-b-2 border-secondary-foreground/30'></span>
@@ -42,14 +49,14 @@ const SignUpForm = () => {
                 <div className='flex flex-col gap-6'>
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
-                      {state?.errors?.email && <p>{state.errors.email}</p>}
-                      <input
+                      <Input
                         id="email"
                         name="email"
                         type="email"
                         placeholder="m@example.com"
                         required
-                      />
+                        />
+                      <FormErrorMessages errors={state?.errors?.email} />
                     </div>
                     <div className="grid gap-2">
                       <div className="flex items-center">
@@ -62,17 +69,7 @@ const SignUpForm = () => {
                         </a>
                       </div>
                       <div className='relative'>
-                        {state?.errors?.password && (
-                          <div>
-                            <p>Password must:</p>
-                            <ul>
-                              {state.errors.password.map((error) => (
-                                <li key={error}>- {error}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        <input 
+                        <Input 
                           className='pr-12'
                           id="password" 
                           name="password"
@@ -85,13 +82,16 @@ const SignUpForm = () => {
                             className={`absolute text-lg right-4 top-2 hover:cursor-pointer ${isPassVisible && "hidden"}`}
                             onClick={() => setIsPassVisible(true)} />
                       </div>
+                      <FormErrorMessages errors={state?.errors?.password} />
                     </div>
                 </div>
-                {state?.messages && <p>{state.messages}</p>}
-                <Button type='submit' className="w-full mt-8 hover:cursor-pointer" size="lg">
+                <div className="flex flex-col">
+                <FormErrorMessages errors={state?.messages} />
+                <Button type='submit' className="w-full mt-8 hover:cursor-pointer" size="lg" disabled={pending}>
                     Continue
                     <IoMdArrowDropright />
                 </Button>
+                </div>
             </form>
         </CardContent>
         <CardFooter className='w-full flex flex-col gap-4'>

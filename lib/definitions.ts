@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import { userData } from './utils'
+import { UserData } from './utils'
  
 export const SignupFormSchema = z.object({
   email: z.email({ error: 'Please enter a valid email.' }).trim(),
@@ -34,11 +34,13 @@ export type FormState =
         password?: string[] | undefined
       }
       message?: string,
-      userData?: userData
+      userData?: UserData
     }
   | undefined
 
 export type SessionPayload = {
     userId: string,
-    expiresAt: Date
+    email: string,
+    profileUrl: string,
+    expiresAt: Date,
 }

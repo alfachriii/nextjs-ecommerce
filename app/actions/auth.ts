@@ -23,16 +23,45 @@ export const getUser = async (email: string, password?: string) => {
     
 }
 
+export const getAccount = async (email: string, accountId: string) => {
+    try {
+        const user = await secureClient.fetch(
+            `*[_type == "account" && email == $email && accountId == $accountId][0]`,
+            { email, accountId }
+        ) 
+        return user; 
+    } catch (error) {
+        console.log("Error fetching account: ", error);
+    }
+}
+
 const createNewUser = async (email: string, hashedPassword: string) => {
     try {
         const newUser = await secureClient.create({
             _type: "user",
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            image: ""
         })
         return newUser
     } catch (error) {
-        console.log("Can't create new user with errors: ", error)
+        console.log("Can't create new user with errors: ", error);
+        return null;
+    }
+}
+
+export const createNewAccount = async (email: string, imageUrl: string, accountId: string) => {
+    try {
+        const newAccount = await secureClient.create({
+            _type: "account",
+            email: email,
+            image: imageUrl,
+            accountId: accountId as string
+        })
+        return newAccount;
+    } catch (error) {
+        console.log("Can't create new account with errors: ", error);
+        return null;
     }
 }
 
@@ -60,12 +89,12 @@ export const signUp = async (state: FormState, formData: FormData) => {
 
     const newUser = await createNewUser(email, hashedPassword);
     if (!newUser) return {
-        messages: "message: 'An error occurred while creating your account.',"
+        messages: "An error occurred while creating your account."
     }
     
-    await createSession(newUser._id);
+    await createSession(newUser._id, newUser.email, newUser.image ?? "");
 
-    redirect("/")
+    return redirect("/");
 } 
 
 export const signIn = async (state: FormState, formData: FormData) => {
@@ -89,14 +118,9 @@ export const signIn = async (state: FormState, formData: FormData) => {
         messages: "Invalid credentials"
     }
 
-    await createSession(user?._id);
+    await createSession(user?._id, user.email, user.image ?? "");
 
-    return {
-        userData: {
-            email: email,
-            profileUrl: user?.image
-        }
-    }
+    return redirect("/");
 }
 
 export async function logout() {

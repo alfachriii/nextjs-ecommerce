@@ -1,8 +1,12 @@
 import SignInForm from "@/components/SignInForm"
 import banner from "@/images/banner/banner_3.svg"
+import { verifySession } from "@/lib/dal"
 import Image from "next/image"
+import { redirect } from "next/navigation"
 
-const SignInPage = () => {
+const SignInPage = async () => {
+  const session = await verifySession();
+  if(session) return redirect("/");
   return (
     <main className='w-full min-h-screen flex items-center px-16'>
       <div className='w-3/5 h-full flex items-center justify-center '>
