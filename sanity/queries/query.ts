@@ -12,9 +12,8 @@ const BRANDS_QUERY = defineQuery(`*[_type=='brand'] | order(name asc) {
 
 const PRODUCTS_BY_IDS_QUERY =
    defineQuery(`*[_type == "product" && _id in $ids]{ 
-    _id, 
-    name, 
-    price, 
+    ..., 
+    "categories": categories[]->title,
     images[] {
         _key,
         _type,
@@ -23,8 +22,8 @@ const PRODUCTS_BY_IDS_QUERY =
     } 
 }`);
 
-const ITEMS_IN_CART_BY_CART_ID_QUERY = defineQuery(
-   `*[_type == "cart" && _id == $cartId][0]{ items }`,
+const CART_BY_ID_QUERY = defineQuery(
+   `*[_type == "cart" && _id == $cartId][0]`,
 );
 
 const PRODUCTS_BY_VARIANT_QUERY =
@@ -106,7 +105,7 @@ const PRODUCTS_QUERY = `*[_type == "product"] | order(name asc){
 }`;
 
 export {
-   ITEMS_IN_CART_BY_CART_ID_QUERY,
+   CART_BY_ID_QUERY,
    PRODUCTS_BY_IDS_QUERY,
    PRODUCTS_BY_VARIANT_QUERY,
    PRODUCTS_BY_FILTER_QUERY,

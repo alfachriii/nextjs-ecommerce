@@ -3,10 +3,15 @@
 import { verifySession } from "@/lib/dal";
 import { client, secureClient } from "@/sanity/lib/client";
 import {
-   ITEMS_IN_CART_BY_CART_ID_QUERY,
+   CART_BY_ID_QUERY,
    PRODUCTS_BY_IDS_QUERY,
 } from "@/sanity/queries/query";
-import { ItemsCart, ItemsCartResult, ProductResult } from "@/sanity/types";
+import {
+   Cart,
+   ItemsCart,
+   ItemsCartResult,
+   ProductResult,
+} from "@/sanity/types";
 
 export const createNewCart = async (userId: string) => {
    try {
@@ -18,26 +23,25 @@ export const createNewCart = async (userId: string) => {
       });
       return cart;
    } catch (error) {
-      console.log("failed to create new cart");
+      console.error("[ACTIONS] Error while creating new cart: ", error);
       return null;
    }
 };
 
 export const addItemToCart = async (productId: string, quantity?: number) => {
    try {
-      const session = await verifySession();
-      if (!session) {
+      const userId = await getUserIdFromSession();
+      if (!userId) {
          return {
             data: null,
+            isSuccess: false,
             messages: "Do not have permission, please login!",
          };
       }
-      const { userId } = session;
       const cartId = `cart-${userId}`;
       const existingItem = await getExistingItemInCart(productId);
 
       if (!existingItem) {
-         console.log("item belom ada bos");
          const itemWithKey = {
             _key: crypto.randomUUID(),
             productId: productId,
@@ -50,51 +54,73 @@ export const addItemToCart = async (productId: string, quantity?: number) => {
             .insert("after", "items[-1]", [itemWithKey])
             .commit();
 
+         console.log("raw result: ", result);
+
          return {
             data: result,
-            messages: "Success add product to cart",
+            isSuccess: true,
+            messages: "Product successfully added to cart",
          };
       }
 
-      console.log("item udah ada bos, tambahin quantitynya aja");
       const newQuantity = existingItem.quantity + (quantity ?? 1);
 
       const result = await secureClient
          .patch(cartId)
          .set({
-            [`items[_key == "${existingItem._key}"].quantity`]: newQuantity,
+            [`items[_key=="${existingItem._key}"].quantity`]: newQuantity,
          })
          .commit();
 
       return {
          data: result,
-         messages: "Success add product to cart",
+         isSuccess: true,
+         messages: "Product successfully added to cart",
       };
    } catch (error) {
-      console.log("Failed add item to cart");
+      console.error("[ACTIONS] Error while adding product to cart: ", error);
       return {
          data: null,
-         messages: "Failed add product to cart"
-      }
+         isSuccess: false,
+         messages: "Failed add product to cart",
+      };
    }
 };
 
-export const getItemsInCart = async () => {
+export const getCart = async () => {
    try {
-      const session = await verifySession();
-      if (!session) {
-         throw new Error("Authorization erorr");
+      const userId = await getUserIdFromSession();
+      if (!userId) {
+         return {
+            data: null,
+            isSuccess: false,
+            messages: "Do not have permission, please login!",
+         };
       }
-      const { userId } = session;
       const cartId = `cart-${userId}`;
 
-      const items = (await secureClient.fetch(ITEMS_IN_CART_BY_CART_ID_QUERY, {
+      const cart = (await secureClient.fetch(CART_BY_ID_QUERY, {
          cartId,
-      })) as ItemsCartResult;
-      return items ?? null;
+      })) as Cart;
+
+      if (!cart._id) return {
+         data: null,
+         isSuccess: false,
+         messages: "Cannot find the cart"
+      }
+
+      return {
+         data: cart,
+         isSuccess: true,
+         messages: "Successfully get cart"
+      };
    } catch (error) {
-      console.log("Failed to fetch products in cart: ", error);
-      return null;
+      console.error("[ACTIONS] Error while fetching cart: ", error);
+      return {
+         data: null,
+         isSuccess: false,
+         messages: "Failed to get cart"
+      };
    }
 };
 
@@ -103,25 +129,102 @@ export const getProductsByIds = async (productIds: string[]) => {
       const products = (await client.fetch(PRODUCTS_BY_IDS_QUERY, {
          ids: productIds,
       })) as ProductResult[];
-      return products;
+      if (products.length === 0)
+         return {
+            data: null,
+            isSuccess: false,
+            messages: "Failed to fetch products",
+         };
+
+      return {
+         data: products,
+         isSuccess: true,
+         messages: "Successfully get products",
+      };
    } catch (error) {
-      console.log("Failed to fetch products by ids: ", error);
-      return null;
+      console.error("[ACTIONS] Error while fetching products by ids: ", error);
+      return {
+         data: null,
+         isSuccess: false,
+         messages: "Failed to fetch products",
+      };
    }
 };
 
+export const deleteItemIncart = async (productId: string) => {
+   try {
+      const userId = await getUserIdFromSession();
+      if (!userId) {
+         return {
+            data: null,
+            isSuccess: false,
+            messages: "Do not have permission, please login!",
+         };
+      }
+      const cartId = `cart-${userId}`;
+      const result = (await secureClient
+         .patch(cartId)
+         .unset([`items[productId == "${productId}"]`])
+         .commit()) as Cart;
+
+      const isDeleted = !result.items?.some((item) => item.productId === productId);
+      if (!isDeleted)
+         return {
+            isSuccess: false,
+            messages: "Failed to delete product",
+         };
+
+      return {
+         isSuccess: true,
+         messages: "Product deleted successfully",
+      };
+   } catch (error) {
+      console.error("[ACTIONS] Error while deleting product: ", error);
+      return {
+         isSuccess: false,
+         messages: "Failed to delete product",
+      };
+   }
+};
+
+export const decreaseItemQuantity = async (productId: string) => {
+   try {
+      const userId = await getUserIdFromSession();
+      if (!userId) {
+         return {
+            isSuccess: false,
+            messages: "Do not have permission, please login!",
+         };
+      }
+      const cartId = `cart-${userId}`
+      await secureClient
+         .patch(cartId)
+         .inc({
+            [`items[productId=="${productId}"].quantity`]: -1,
+         })
+         .commit() as Cart;
+      
+      return {
+         isSuccess: true,
+         messages: "Product Quantity Successfully decreased"
+      }
+   } catch (error) {
+      console.error("[ACTIONS] Error while decrease item quantity: ", error);
+      return {
+         isSuccess: false,
+         messages: "Internal Server Error."
+      }
+   }
+}
+
 const getExistingItemInCart = async (targetProductId: string) => {
    try {
-      const currentItems = await getItemsInCart();
-      console.log(
-         "[ACTIONS] type of currentItems: ",
-         typeof currentItems?.items,
-      );
-      console.log("[ACTIONS] currentItems: ", currentItems);
+      const { data } = await getCart();
+      const currentItems = data?.items;
 
       if (!currentItems) return null;
-      const existingItem = currentItems?.items?.find(
-         (item) => item.productId === targetProductId,
+      const existingItem = currentItems.find(
+         (item) => String(item.productId) === String(targetProductId),
       );
 
       if (existingItem) return existingItem;
@@ -130,4 +233,10 @@ const getExistingItemInCart = async (targetProductId: string) => {
    } catch (error) {
       console.log("Failed to validate Product in cart: ", error);
    }
+};
+
+const getUserIdFromSession = async () => {
+   const session = await verifySession();
+   if (!session) return null;
+   return session.userId;
 };

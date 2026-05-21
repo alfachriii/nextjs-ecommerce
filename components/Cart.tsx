@@ -10,59 +10,50 @@ import {
    FieldDescription,
    FieldLabel,
 } from "@/components/ui/field";
-import CartItems from "./CartItems";
 import { useCart } from "@/hooks/useCart";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import CartEmpty from "./CartEmpty";
-import { ItemsCart } from "@/sanity/types";
-import { CartItem } from "@/store";
+import { useStore } from "@/store";
+import CartItem from "./CartItem";
 
 const Cart = () => {
-   const { handleGetProductItems, getGroupedItems } = useCart();
-   const [groupedItems, setGroupedItems] = useState<CartItem[]>([]);
-   const [isClient, setIsClient] = useState(false);
+   const { getGroupedItems, getSubTotalPrice, getTotalPrice } = useStore();
+   const { handleGetProductItems } = useCart();
 
    useEffect(() => {
-      setIsClient(true);
+      handleGetProductItems();
    }, []);
 
-   useEffect(() => {
-      if (!isClient) return;
+   const groupedItems = getGroupedItems();
 
-      const currentItems = getGroupedItems();
-      if (currentItems.length === 0) {
-         console.log("current items kosong bos");
-         handleGetProductItems();
-
-         const newItems = getGroupedItems();
-         setGroupedItems(newItems);
-      }
-
-      setGroupedItems(currentItems);
-   }, [isClient]);
-
-   console.log(groupedItems);
    if (!groupedItems) return null;
 
    return (
       <>
          {groupedItems.length > 0 ? (
             <div className="w-full grid grid-cols-3 gap-8">
-               <CartItems cartItems={groupedItems} />
+               <div className="col-span-2 bg-secondary/30 flex flex-col h-fit border-2 border-secondary-foreground/30 rounded-xl">
+                  {groupedItems.map((item, index) => (
+                     <CartItem key={index} cartItem={item} />
+                  ))}
+                  <div className="w-full p-6">
+                     <Button variant="destructive">Reset Cart</Button>
+                  </div>
+               </div>
                <div className="flex flex-col h-fit gap-8">
                   <div className="bg-secondary/30 flex flex-col h-fit border-2 border-secondary-foreground/30 p-4 pt-6 gap-4 rounded-xl">
                      <h2 className="text-2xl font-semibold">Order Summary</h2>
                      <div className="w-full flex justify-between">
                         <p>SubTotal</p>
                         <PriceFormatter
-                           amount={32000000}
+                           amount={getSubTotalPrice()}
                            className="font-semibold"
                         />
                      </div>
                      <div className="w-full flex justify-between">
                         <p>Discount</p>
                         <PriceFormatter
-                           amount={3200000}
+                           amount={getSubTotalPrice() - getTotalPrice()}
                            className="font-semibold"
                         />
                      </div>
@@ -70,7 +61,7 @@ const Cart = () => {
                      <div className="w-full text-xl font-semibold flex justify-between">
                         <p>Discount</p>
                         <PriceFormatter
-                           amount={3200000}
+                           amount={getTotalPrice()}
                            className="font-semibold"
                         />
                      </div>

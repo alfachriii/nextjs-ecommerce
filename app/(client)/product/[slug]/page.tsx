@@ -11,7 +11,6 @@ import { FiTruck } from "react-icons/fi";
 import { GrReturn } from "react-icons/gr";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { MdOutlineCompare } from "react-icons/md";
-import Counter from "@/components/Counter";
 import { getProductBySlug } from "@/sanity/queries";
 import { notFound } from "next/navigation";
 import ImageView from "@/components/ImageView";

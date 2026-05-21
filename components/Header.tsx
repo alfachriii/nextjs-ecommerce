@@ -6,16 +6,10 @@ import HeaderMenu from './HeaderMenu'
 import CartIcon from './CartIcon'
 import SearchBar from './SearchBar'
 import UserButton from './UserButton'
-import { cookies } from 'next/headers'
-import { decrypt } from '@/lib/session'
+import { verifySession } from '@/lib/dal'
 
 const Header = async () => {
-    let session = null;
-    const cookie = (await cookies()).get('session')?.value;
-
-    if (cookie) {
-      session = await decrypt(cookie);
-    }
+    const session = await verifySession();
 
     return (
       <header className='fixed top-0 left-0 right-0 border-b-2 border-accent py-4 bg-background/40 backdrop-blur-lg z-50'>
