@@ -1,7 +1,8 @@
-import { PRODUCT_BY_SLUG_QUERY_RESULT } from '@/sanity.types'
+
+import { ProductBySlug } from '@/sanity/types'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
 
-const ProductCharacteristics = ({ product }: { product: PRODUCT_BY_SLUG_QUERY_RESULT }) => {
+const ProductCharacteristics = ({ product }: { product: ProductBySlug }) => {
   return (
     <Accordion className="group">
         <AccordionItem value="details">

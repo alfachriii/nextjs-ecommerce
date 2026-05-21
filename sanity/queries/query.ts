@@ -10,7 +10,25 @@ const BRANDS_QUERY = defineQuery(`*[_type=='brand'] | order(name asc) {
     },    
 }`);
 
-const PRODUCTS_BY_VARIANT_QUERY = defineQuery(`*[_type == "product" && variant == $variant][0...$quantity]{
+const PRODUCTS_BY_IDS_QUERY =
+   defineQuery(`*[_type == "product" && _id in $ids]{ 
+    _id, 
+    name, 
+    price, 
+    images[] {
+        _key,
+        _type,
+        "url": asset->url,
+        "lqip": asset->metadata.lqip
+    } 
+}`);
+
+const ITEMS_IN_CART_BY_CART_ID_QUERY = defineQuery(
+   `*[_type == "cart" && _id == $cartId][0]{ items }`,
+);
+
+const PRODUCTS_BY_VARIANT_QUERY =
+   defineQuery(`*[_type == "product" && variant == $variant][0...$quantity]{
     ...,
     "categories": categories[]->title, 
     images[] {
@@ -19,7 +37,7 @@ const PRODUCTS_BY_VARIANT_QUERY = defineQuery(`*[_type == "product" && variant =
         "url": asset->url,
         "lqip": asset->metadata.lqip
     }
-}`)
+}`);
 
 const PRODUCTS_BY_FILTER_QUERY = defineQuery(`*[_type == 'product' 
     && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
@@ -34,10 +52,10 @@ const PRODUCTS_BY_FILTER_QUERY = defineQuery(`*[_type == 'product'
             "url": asset->url,
             "lqip": asset->metadata.lqip
         } 
-    }`)
+    }`);
 
 const PRODUCT_BY_SLUG_QUERY = defineQuery(
-  `*[_type == "product" && slug.current == $slug] | order(name asc) [0] {
+   `*[_type == "product" && slug.current == $slug] | order(name asc) [0] {
     ...,
     "brandName": brand->title,
     images[] {
@@ -46,7 +64,7 @@ const PRODUCT_BY_SLUG_QUERY = defineQuery(
     "url": asset->url,
     "lqip": asset->metadata.lqip
     }
-  }`
+  }`,
 );
 
 const CATEGORIES_QUERY = defineQuery(`*[_type == 'category'] | order(name asc) {
@@ -60,7 +78,8 @@ const CATEGORIES_QUERY = defineQuery(`*[_type == 'category'] | order(name asc) {
     "productCount": count(*[_type == "product" && references(^._id)])
 }`);
 
-const CATEGORIES_WITH_QUANTITY_QUERY = defineQuery(`*[_type == 'category'][0...$quantity] | order(name asc) {
+const CATEGORIES_WITH_QUANTITY_QUERY =
+   defineQuery(`*[_type == 'category'][0...$quantity] | order(name asc) {
     ...,
     image {
       _key,
@@ -76,7 +95,7 @@ const BRAND_QUERY = defineQuery(`*[_type == "product" && slug.current == $slug]{
   }`);
 
 const MY_ORDERS_QUERY =
-  defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){
+   defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){
 ...,products[]{
   ...,product->
 }
@@ -84,16 +103,18 @@ const MY_ORDERS_QUERY =
 
 const PRODUCTS_QUERY = `*[_type == "product"] | order(name asc){
   ...,"categories": categories[]->title
-}`
+}`;
 
 export {
-  PRODUCTS_BY_VARIANT_QUERY,
-  PRODUCTS_BY_FILTER_QUERY,
-  PRODUCTS_QUERY,
-  CATEGORIES_QUERY,
-  CATEGORIES_WITH_QUANTITY_QUERY,
-  BRANDS_QUERY,
-  PRODUCT_BY_SLUG_QUERY,
-  BRAND_QUERY,
-  MY_ORDERS_QUERY,
+   ITEMS_IN_CART_BY_CART_ID_QUERY,
+   PRODUCTS_BY_IDS_QUERY,
+   PRODUCTS_BY_VARIANT_QUERY,
+   PRODUCTS_BY_FILTER_QUERY,
+   PRODUCTS_QUERY,
+   CATEGORIES_QUERY,
+   CATEGORIES_WITH_QUANTITY_QUERY,
+   BRANDS_QUERY,
+   PRODUCT_BY_SLUG_QUERY,
+   BRAND_QUERY,
+   MY_ORDERS_QUERY,
 };

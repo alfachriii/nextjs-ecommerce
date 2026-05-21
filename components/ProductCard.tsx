@@ -1,16 +1,15 @@
 import Image from "next/image";
 import PriceView from "./PriceView";
-import { Button } from "./ui/button";
-import { IoCartOutline } from "react-icons/io5";
 import Link from "next/link";
-import { PRODUCTS_BY_VARIANT_QUERY_RESULT } from "@/sanity.types";
 import { generateImageUrl, limitString } from "@/lib/utils";
+import AddToCartButton from "./AddToCartButton";
+import { ProductResult } from "@/sanity/types";
 
-const ProductCard = ({ product }: { product: PRODUCTS_BY_VARIANT_QUERY_RESULT[0]} ) => {
+const ProductCard = ({ product }: { product: ProductResult} ) => {
     
     return (
       <article className='w-full h-fit border-2 border-accent-foreground/20 rounded-lg flex shrink-0 flex-col group'>
-          <Link href={`/product/${product?.slug?.current}`}>
+          {/* <Link href={`/product/${product?.slug?.current}`}> */}
               {product?.images && product?.images[0].url && product?.images[0].lqip && (
                   <div className='aspect-w-2 aspect-h-3 shrink-0 bg-secondary rounded-tl-lg rounded-tr-lg overflow-hidden'>
                       <Image 
@@ -35,12 +34,9 @@ const ProductCard = ({ product }: { product: PRODUCTS_BY_VARIANT_QUERY_RESULT[0]
                       <p className="text-sm font-semibold text-chart-5">{product?.stock}</p>
                   </div>
                   <PriceView price={product?.price} discount={product?.discount} />
-                  <Button className="w-3/4 rounded-full gap-3 hover:cursor-pointer hover:bg-chart-5 hoverEffect">
-                      <span className="scale-125"><IoCartOutline /></span>
-                      <p className="text-base">Add to Cart</p>
-                  </Button>
+                  <AddToCartButton product={product} />
               </div>
-          </Link>
+          {/* </Link> */}
       </article>
     )
 }

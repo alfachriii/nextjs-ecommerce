@@ -1,14 +1,12 @@
 'use client'
 
-import { brandData } from "@/constants/data"
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Label } from "../ui/label"
-import { useState } from "react"
 import { Button } from "../ui/button"
-import { BRANDS_QUERY_RESULT } from "@/sanity.types"
+import { BrandResult } from "@/sanity/types"
 
 interface Props {
-  brands: BRANDS_QUERY_RESULT;
+  brands: BrandResult[];
   selectedBrand: string | null;
   setSelectedBrand: React.Dispatch<React.SetStateAction<string | null>>;
 }

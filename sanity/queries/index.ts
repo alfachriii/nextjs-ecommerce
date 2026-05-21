@@ -1,5 +1,6 @@
-import { CATEGORIES_QUERY_RESULT, Category, Product } from "@/sanity.types";
+
 import { sanityFetch } from "../lib/live";
+import { BrandResult, CategoryResult, ProductBySlug, ProductResult } from "../types";
 import {
   BRAND_QUERY,
   BRANDS_QUERY,
@@ -26,7 +27,7 @@ const getCategories = async (quantity?: number) => {
       params: quantity ? { quantity } : {},
     });
     
-    return data;
+    return data as CategoryResult[];
   } catch (error) {
     console.log("Error fetching categories", error);
     return [];
@@ -36,7 +37,7 @@ const getCategories = async (quantity?: number) => {
 const getAllProducts = async () => {
     try {
         const { data } = await sanityFetch({ query: PRODUCTS_QUERY });
-        return data ?? [];
+        return data as ProductResult[];
     } catch (error) {
         console.log("Error fetching all products: ", error);
         return [];
@@ -46,7 +47,7 @@ const getAllProducts = async () => {
 const getAllBrands = async () => {
   try {
     const { data } = await sanityFetch({ query: BRANDS_QUERY });
-    return data ?? [];
+    return data as BrandResult[];
   } catch (error) {
     console.log("Error fetching all brands:", error);
     return [];
@@ -60,7 +61,7 @@ const getProductBySlug = async (slug: string) => {
       params: { slug },
     }))
 
-    return data;
+    return data as ProductBySlug;
   } catch (error) {
     console.error("Error fetching product by ID:", error);
     return null;

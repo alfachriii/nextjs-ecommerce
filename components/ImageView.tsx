@@ -1,12 +1,10 @@
 'use client'
 import { generateImageUrl } from '@/lib/utils';
-import { PRODUCT_BY_SLUG_QUERY_RESULT } from '@/sanity.types';
+import { ProductImagesType } from '@/sanity/types';
 import Image from 'next/image'
 import { useState } from 'react';
 
-type imagesType = NonNullable<NonNullable<PRODUCT_BY_SLUG_QUERY_RESULT>['images']>
-
-const ImageView = ({ images = [] }: { images: imagesType }) => {
+const ImageView = ({ images = [] }: { images: ProductImagesType }) => {
     const [active, setActive] = useState(images[0]);
 
     return (

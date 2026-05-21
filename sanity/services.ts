@@ -1,5 +1,6 @@
 import { client } from "./lib/client";
 import { PRODUCTS_BY_FILTER_QUERY, PRODUCTS_BY_VARIANT_QUERY } from "./queries/query";
+import { ProductResult } from "./types";
 
 const getProductsByVariant = async (variant: string, quantity: number) => {
 

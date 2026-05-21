@@ -7,13 +7,13 @@ import BrandList from './shop/BrandList'
 import PriceList from './shop/PriceList'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { BRANDS_QUERY_RESULT, CATEGORIES_QUERY_RESULT, PRODUCTS_BY_FILTER_QUERY_RESULT } from '@/sanity.types'
 import { getMinMaxPrice } from '@/lib/utils'
 import { getProductByFilter } from '@/sanity/services'
+import { BrandResult, CategoryResult, ProductResult } from '@/sanity/types'
 
 interface Props {
-    categories: CATEGORIES_QUERY_RESULT;
-    brands: BRANDS_QUERY_RESULT;
+    categories: CategoryResult[];
+    brands: BrandResult[];
 }
 
 const Shop = ({ categories, brands }: Props) => {
@@ -22,7 +22,7 @@ const Shop = ({ categories, brands }: Props) => {
     const categoryParams = searchParams?.get("category");
 
     const [loading, setLoading] = useState(true);
-    const [products, setProducts] = useState<PRODUCTS_BY_FILTER_QUERY_RESULT>();
+    const [products, setProducts] = useState<ProductResult[]>();
     const [selectedBrand, setSelectedBrand] = useState<string | null>(brandParams || null);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParams || null);
     const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
@@ -75,7 +75,7 @@ const Shop = ({ categories, brands }: Props) => {
                     <span>LOADING BOSSS..</span>
                     ) : products?.length ? (
                       products?.map((product) => (
-                        <ProductCard key={product._id} product={product} />
+                        <ProductCard key={product?._id} product={product} />
                       ))
                     ) : (
                     <>

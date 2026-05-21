@@ -3,11 +3,11 @@ import { Button } from './ui/button'
 import Image from 'next/image'
 import ServicesBanner from './ServicesBanner'
 import { getAllBrands } from '@/sanity/queries'
-import { BRANDS_QUERY_RESULT } from '@/sanity.types'
 import { generateImageUrl } from '@/lib/utils'
+import { BrandResult } from '@/sanity/types'
 
 const ShopByBrands = async () => {
-  const brands: BRANDS_QUERY_RESULT = await getAllBrands();
+  const brands: BrandResult[] = await getAllBrands();
 
   return (
     <section className='w-full flex flex-col bg-secondary rounded-xl p-8 gap-12 mb-8'>
