@@ -7,7 +7,7 @@ const HeaderMenu = () => {
     const pathname = usePathname();
 
   return (
-    <div className='flex gap-8 font-medium font-sans'>
+    <div className='flex gap-8 font-semibold font-sans'>
         {headerData.map((item) => (
             <Link key={item.href} href={item.href} className={`group relative hoverEffect hover:text-chart-1 ${pathname === item?.href && "text-chart-1"}`}>
                 {item.title}

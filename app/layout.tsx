@@ -1,11 +1,15 @@
 // For adding custom fonts with other frameworks, see:
 // https://tailwindcss.com/docs/font-family
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
+import { Inter, Source_Serif_4, JetBrains_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const poppins = Poppins({
+   weight: "500",
+   subsets: ["latin"],
+   variable: "--font-sans",
+})
 
 const fontSerif = Source_Serif_4({
   subsets: ["latin"],
@@ -28,8 +32,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", inter.variable)}>
-      <body className={`${inter.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}>
+    <html lang="en" className={cn("font-sans", poppins.variable)}>
+      <body className={`${poppins.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}>
         {children}
         
       </body>

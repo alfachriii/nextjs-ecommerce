@@ -12,6 +12,7 @@ interface StoreState {
    setItems: (cartItems: CartItem[]) => void;
    addItem: (product: ProductResult) => void;
    removeItem: (productId: string) => void;
+   resetCart: () => void;
    getTotalPrice: () => number;
    getSubTotalPrice: () => number;
    getItemCount: (productId: string) => number;
@@ -58,6 +59,7 @@ export const useStore = create<StoreState>()(
                   return acc;
                }, [] as CartItem[]),
             })),
+         resetCart: () => set({ items: [] }),
          getTotalPrice: () => {
             return get().items.reduce(
                (total, item) =>
