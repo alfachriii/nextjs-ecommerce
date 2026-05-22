@@ -8,9 +8,10 @@ import { useCart } from "@/hooks/useCart";
 
 interface Props {
    product: ProductResult;
+   isPending: boolean;
 }
 
-const Counter = ({ product }: Props) => {
+const Counter = ({ product, isPending }: Props) => {
    if (!product) return null;
 
    const { handleAddItem, handleDecreaseItemQuantity } = useCart();
@@ -22,7 +23,7 @@ const Counter = ({ product }: Props) => {
          <Button
             variant="ghost"
             size="icon"
-            disabled={itemCount === 1}
+            disabled={itemCount === 1 || isPending}
             onClick={() => handleDecreaseItemQuantity(product?._id)}
          >
             <LuMinus />
@@ -32,7 +33,7 @@ const Counter = ({ product }: Props) => {
             value={itemCount}
             disabled
          />
-         <Button variant="ghost" onClick={() => handleAddItem(product)}>
+         <Button variant="ghost" onClick={() => handleAddItem(product)} disabled={isPending}>
             <LuPlus />
          </Button>
       </ButtonGroup>

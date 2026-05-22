@@ -42,6 +42,7 @@ export const addItemToCart = async (productId: string, quantity?: number) => {
       const existingItem = await getExistingItemInCart(productId);
 
       if (!existingItem) {
+         console.log("item blon ada...");
          const itemWithKey = {
             _key: crypto.randomUUID(),
             productId: productId,
@@ -54,8 +55,6 @@ export const addItemToCart = async (productId: string, quantity?: number) => {
             .insert("after", "items[-1]", [itemWithKey])
             .commit();
 
-         console.log("raw result: ", result);
-
          return {
             data: result,
             isSuccess: true,
@@ -67,8 +66,8 @@ export const addItemToCart = async (productId: string, quantity?: number) => {
 
       const result = await secureClient
          .patch(cartId)
-         .set({
-            [`items[_key=="${existingItem._key}"].quantity`]: newQuantity,
+         .inc({
+            [`items[productId=="${existingItem.productId}"].quantity`]: +1,
          })
          .commit();
 
@@ -103,23 +102,24 @@ export const getCart = async () => {
          cartId,
       })) as Cart;
 
-      if (!cart._id) return {
-         data: null,
-         isSuccess: false,
-         messages: "Cannot find the cart"
-      }
+      if (!cart._id)
+         return {
+            data: null,
+            isSuccess: false,
+            messages: "Cannot find the cart",
+         };
 
       return {
          data: cart,
          isSuccess: true,
-         messages: "Successfully get cart"
+         messages: "Successfully get cart",
       };
    } catch (error) {
       console.error("[ACTIONS] Error while fetching cart: ", error);
       return {
          data: null,
          isSuccess: false,
-         messages: "Failed to get cart"
+         messages: "Failed to get cart",
       };
    }
 };
@@ -167,7 +167,9 @@ export const deleteItemIncart = async (productId: string) => {
          .unset([`items[productId == "${productId}"]`])
          .commit()) as Cart;
 
-      const isDeleted = !result.items?.some((item) => item.productId === productId);
+      const isDeleted = !result.items?.some(
+         (item) => item.productId === productId,
+      );
       if (!isDeleted)
          return {
             isSuccess: false,
@@ -196,26 +198,26 @@ export const decreaseItemQuantity = async (productId: string) => {
             messages: "Do not have permission, please login!",
          };
       }
-      const cartId = `cart-${userId}`
+      const cartId = `cart-${userId}`;
       await secureClient
          .patch(cartId)
          .inc({
             [`items[productId=="${productId}"].quantity`]: -1,
          })
-         .commit() as Cart;
-      
+         .commit();
+
       return {
          isSuccess: true,
-         messages: "Product Quantity Successfully decreased"
-      }
+         messages: "Product Quantity Successfully decreased",
+      };
    } catch (error) {
       console.error("[ACTIONS] Error while decrease item quantity: ", error);
       return {
          isSuccess: false,
-         messages: "Internal Server Error."
-      }
+         messages: "Internal Server Error.",
+      };
    }
-}
+};
 
 const getExistingItemInCart = async (targetProductId: string) => {
    try {
@@ -223,9 +225,10 @@ const getExistingItemInCart = async (targetProductId: string) => {
       const currentItems = data?.items;
 
       if (!currentItems) return null;
-      const existingItem = currentItems.find(
-         (item) => String(item.productId) === String(targetProductId),
-      );
+      const existingItem = currentItems.find((item) => {
+         const currentId = item.productId;
+         return String(currentId) === String(targetProductId);
+      });
 
       if (existingItem) return existingItem;
 
