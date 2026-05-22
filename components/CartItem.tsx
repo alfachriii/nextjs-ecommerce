@@ -12,11 +12,11 @@ import { useCart } from "@/hooks/useCart";
 import Loading from "./Loading";
 
 const CartItem = ({ cartItem }: { cartItem: CartItemType }) => {
-   const { handleDeleteItem, isPending } = useCart();
-
+   const { handleDeleteItem, loading } = useCart();
+   console.log(loading);
    return (
       <>
-         {isPending ? (
+         {loading ? (
             <Loading />
          ) : (
             <div
@@ -70,7 +70,7 @@ const CartItem = ({ cartItem }: { cartItem: CartItemType }) => {
                   <div className="w-full flex items-baseline justify-between">
                      <Counter
                         product={cartItem.product}
-                        isPending={isPending}
+                        isPending={loading}
                      />
                      <PriceFormatter
                         amount={cartItem.product?.price}

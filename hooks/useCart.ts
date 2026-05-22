@@ -7,36 +7,42 @@ import {
    getCart,
    getProductsByIds,
 } from "@/app/actions/cart";
+import { myToast } from "@/lib/myToast";
 import { ProductResult } from "@/sanity/types";
 import { CartItem, useStore } from "@/store";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 export const useCart = () => {
    const { setItems, addItem, getGroupedItems, deleteCartProduct, removeItem } = useStore();
    const [isPending, startTransition] = useTransition();
+   const [loading, setLoading] = useState(false);
 
    const handleAddItem = (product: ProductResult, quantity?: number) => {
-      console.log("product yang mau di add: ", product);
+      setLoading(true);
       startTransition(async () => {
          try {
             const { data, messages, isSuccess } = await addItemToCart(
                product?._id ?? "",
                quantity,
             );
-            // TODO: make toast for errors
-            if (!data && !isSuccess) return alert(messages);
+            if (!data && !isSuccess) {
+               myToast.error(messages);
+               return;
+            }
 
-            console.log("added item: ", product)
-            // TODO: make success toast
-            alert("Success Add Item To Cart");
+            myToast.success(messages);
+            return;
          } catch (error) {
-            alert(`Failed add item to cart: ${error}`);
+            myToast.error("Failed add item to cart.", `${error}`);
+            return;
          }
       });
       addItem(product);
+      setLoading(false);
    };
 
    const handleGetProductItems = () => {
+      setLoading(true);
       startTransition(async () => {
          try {
             const cart = await getCart();
@@ -49,7 +55,10 @@ export const useCart = () => {
             if (!productIds) return;
 
             const products = await getProductsByIds(productIds);
-            if (!products.data && !products.isSuccess) return alert(products.messages);
+            if (!products.data && !products.isSuccess) {
+               myToast.error(products.messages);
+               return;
+            }
 
             const productItems = currentItems.map((item) => {
                const productData = products.data?.find(prod => prod?._id === item.productId)
@@ -64,41 +73,58 @@ export const useCart = () => {
             
             return;
          } catch (error) {
-            return alert("Failed fetch products in cart");
+            myToast.error("Failed fetch products in cart.", `${error}`)
+            return;
          }
       });
+      setLoading(false);
    };
 
    const handleDeleteItem = (productId: string) => {
+      setLoading(true);
       startTransition(async () => {
          try {
             const { isSuccess, messages } = await deleteItemIncart(productId);
-            if (!isSuccess) return alert(messages);
+            if (!isSuccess) {
+               myToast.error(messages);
+               return;
+            }
 
-            return alert(messages);
+            myToast.success(messages);
+            return;
          } catch (error) {
-            return alert("failed to delete product")
+            myToast.error("Failed to delete product.", `${error}`)
+            return;
          }
       })
       deleteCartProduct(productId);
+      setLoading(false);
    }
 
    const handleDecreaseItemQuantity = (productId: string) => {
+      setLoading(true);
       startTransition(async () => {
          try {
             const { isSuccess, messages } = await decreaseItemQuantity(productId); 
-            if (!isSuccess) return alert(messages);
+            if (!isSuccess) {
+               myToast.error(messages);
+               return;
+            }
 
-            alert(messages);
+            myToast.success(messages);
+            return;
          } catch (error) {
-            return alert("failed to decrease item quantity")
+            myToast.error("Failed to decrease item quantity.", `${error}`)
+            return;
          }
       })
       removeItem(productId);
+      setLoading(false);
    }
 
    return {
       isPending,
+      loading,
       getGroupedItems,
       handleAddItem,
       handleGetProductItems,
