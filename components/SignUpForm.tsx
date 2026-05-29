@@ -47,6 +47,17 @@ const SignUpForm = () => {
         <CardContent>
             <form action={action}>
                 <div className='flex flex-col gap-6'>
+                  <div className="grid gap-2">
+                      <Label htmlFor="email">Name</Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="John"
+                        required
+                        />
+                      <FormErrorMessages errors={state?.errors?.email} />
+                    </div>
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
                       <Input

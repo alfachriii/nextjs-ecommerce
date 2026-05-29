@@ -59,6 +59,7 @@ export async function GET(request: NextRequest) {
 
       if (!existingUser?._id) {
          const newUser = await createNewAccount(
+            userData?.name,
             userData?.email,
             userData?.picture,
             userData?.id,

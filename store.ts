@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ProductResult } from "./sanity/types";
+import { AddressData, ProductResult } from "./sanity/types";
 
 export interface CartItem {
    product: ProductResult;
@@ -19,6 +19,17 @@ interface StoreState {
    getGroupedItems: () => CartItem[];
    deleteCartProduct: (productId: string) => void;
    decreaseItemQuantity: (productId: string) => void;
+}
+
+interface DeliveryState {
+   addresses: AddressData[];
+   selectedAddress: AddressData | null;
+   getSelectedAddress: () => AddressData | null;
+   setAddresses: (addressDatas: AddressData[]) => void;
+   addAddress: (addressData: AddressData) => void;
+   setSelectedAddress: (addressData: AddressData) => void;
+   getAddresses: () => AddressData[];
+   resetAddresses: () => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -102,6 +113,30 @@ export const useStore = create<StoreState>()(
       }),
       {
          name: "cartStore",
+      },
+   ),
+);
+
+export const useDeliveryAddressState = create<DeliveryState>()(
+   persist(
+      (set, get) => ({
+         addresses: [],
+         selectedAddress: null,
+         setAddresses: (addressDatas) => set({ addresses: addressDatas }),
+         addAddress: (addressData) => {
+            set((state) => {
+               return { addresses: [...state.addresses, addressData] };
+            });
+         },
+         setSelectedAddress: (addressData) => {
+            set({ selectedAddress: addressData });
+         },
+         getSelectedAddress: () => get().selectedAddress,
+         getAddresses: () => get().addresses,
+         resetAddresses: () => set({ addresses: [], selectedAddress: null }),
+      }),
+      {
+         name: "addressStore",
       },
    ),
 );

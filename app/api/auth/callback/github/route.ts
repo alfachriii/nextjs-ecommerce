@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
          },
       });
       const userData = await userResponse.json();
-
+      console.log(userData);
       let userEmail = userData.email;
 
       if (!userEmail) {
@@ -86,9 +86,10 @@ export async function GET(request: NextRequest) {
 
       if (!existingUser?._id) {
          const newUser = await createNewAccount(
+            userData?.login,
             userEmail,
             userData?.avatar_url,
-            userData?.id,
+            userData?.id as string,
          );
          if (!newUser) {
             throw new Error("Error creating account");

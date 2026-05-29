@@ -1,17 +1,13 @@
 "use server";
 
-import { verifySession } from "@/lib/dal";
+import { getUserIdFromSession, verifySession } from "@/lib/dal";
 import { client, secureClient } from "@/sanity/lib/client";
 import {
    CART_BY_ID_QUERY,
+   PRODUCT_BY_ID_QUERY,
    PRODUCTS_BY_IDS_QUERY,
 } from "@/sanity/queries/query";
-import {
-   Cart,
-   ItemsCart,
-   ItemsCartResult,
-   ProductResult,
-} from "@/sanity/types";
+import { Cart, ProductResult } from "@/sanity/types";
 
 export const createNewCart = async (userId: string) => {
    try {
@@ -31,13 +27,7 @@ export const createNewCart = async (userId: string) => {
 export const addItemToCart = async (productId: string, quantity?: number) => {
    try {
       const userId = await getUserIdFromSession();
-      if (!userId) {
-         return {
-            data: null,
-            isSuccess: false,
-            messages: "Do not have permission, please login!",
-         };
-      }
+
       const cartId = `cart-${userId}`;
       const existingItem = await getExistingItemInCart(productId);
 
@@ -61,8 +51,6 @@ export const addItemToCart = async (productId: string, quantity?: number) => {
             messages: "Product successfully added to cart",
          };
       }
-
-      const newQuantity = existingItem.quantity + (quantity ?? 1);
 
       const result = await secureClient
          .patch(cartId)
@@ -120,6 +108,32 @@ export const getCart = async () => {
          data: null,
          isSuccess: false,
          messages: "Failed to get cart",
+      };
+   }
+};
+
+export const getProductById = async (productId: string) => {
+   try {
+      const result = (await client.fetch(PRODUCT_BY_ID_QUERY, {
+         productId: productId,
+      })) as ProductResult;
+      if (!result?._id)
+         return {
+            data: null,
+            isSuccess: false,
+            messages: "Cannot find the product",
+         };
+      return {
+         data: result,
+         isSuccess: true,
+         messages: "Successfully get product",
+      };
+   } catch (error) {
+      console.error("[ACTIONS] Error while fetching product: ", error);
+      return {
+         data: null,
+         isSuccess: false,
+         messages: "Failed to get product",
       };
    }
 };
@@ -236,10 +250,4 @@ const getExistingItemInCart = async (targetProductId: string) => {
    } catch (error) {
       console.log("Failed to validate Product in cart: ", error);
    }
-};
-
-const getUserIdFromSession = async () => {
-   const session = await verifySession();
-   if (!session) return null;
-   return session.userId;
 };

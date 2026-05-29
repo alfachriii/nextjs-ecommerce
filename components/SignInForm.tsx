@@ -26,18 +26,18 @@ const SignInForm = () => {
             <CardTitle className='text-2xl font-bold'>Sign In to your account</CardTitle>
             <CardDescription>Welcome back! Please sign in to continue</CardDescription>
             <div className='w-full flex justify-center gap-4 my-4'>
-                <Link href="/api/auth/github" className="grow">
+                <a href="/api/auth/github" className="grow">
                   <Button variant="outline" className="w-full">
                         <FaGithub />
                         Github
                   </Button>
-                </Link>
-                <Link href="/api/auth/google" className="grow">
+                </a>
+                <a href="/api/auth/google" className="grow">
                   <Button variant="outline" className="w-full">
                         <FcGoogle />
                         Google
                   </Button>
-                </Link>
+                </a>
             </div>
             <div className='w-full flex items-center gap-4'>
                 <span className='grow border-b-2 border-secondary-foreground/30'></span>

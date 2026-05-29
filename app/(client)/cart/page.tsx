@@ -2,7 +2,6 @@ import Container from "@/components/Container";
 import { verifySession } from "@/lib/dal";
 import { redirect } from "next/navigation";
 import Cart from "@/components/Cart";
-import CartEmpty from "@/components/CartEmpty";
 
 const CartPage = async () => {
    const session = await verifySession();

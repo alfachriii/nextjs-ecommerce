@@ -8,7 +8,6 @@ import {
 } from "@/lib/session";
 import { secureClient } from "@/sanity/lib/client";
 import { redirect } from "next/navigation";
-import { createNewCart } from "./cart";
 
 export const getUser = async (email: string, password?: string) => {
    const query = password
@@ -31,7 +30,7 @@ export const getAccount = async (email: string, accountId: string) => {
    try {
       const user = await secureClient.fetch(
          `*[_type == "account" && email == $email && accountId == $accountId][0]`,
-         { email, accountId },
+         { email, accountId: `${accountId}` },
       );
       return user;
    } catch (error) {
@@ -39,10 +38,15 @@ export const getAccount = async (email: string, accountId: string) => {
    }
 };
 
-const createNewUser = async (email: string, hashedPassword: string) => {
+const createNewUser = async (
+   name: string,
+   email: string,
+   hashedPassword: string,
+) => {
    try {
       const newUser = await secureClient.create({
          _type: "user",
+         name,
          email,
          password: hashedPassword,
          image: "",
@@ -55,6 +59,7 @@ const createNewUser = async (email: string, hashedPassword: string) => {
 };
 
 export const createNewAccount = async (
+   name: string,
    email: string,
    imageUrl: string,
    accountId: string,
@@ -62,9 +67,10 @@ export const createNewAccount = async (
    try {
       const newAccount = await secureClient.create({
          _type: "account",
+         name: name,
          email: email,
          image: imageUrl,
-         accountId: accountId as string,
+         accountId: `${accountId}`,
       });
       return newAccount;
    } catch (error) {
@@ -75,6 +81,7 @@ export const createNewAccount = async (
 
 export const signUp = async (state: FormState, formData: FormData) => {
    const validatedFields = SignupFormSchema.safeParse({
+      name: formData.get("name"),
       email: formData.get("email"),
       password: formData.get("password"),
    });
@@ -85,7 +92,7 @@ export const signUp = async (state: FormState, formData: FormData) => {
       };
    }
 
-   const { email, password } = validatedFields.data;
+   const { name, email, password } = validatedFields.data;
    const hashedPassword = await hashPassword(password);
    const user = await getUser(email);
 
@@ -95,8 +102,8 @@ export const signUp = async (state: FormState, formData: FormData) => {
       };
    }
 
-   const newUser = await createNewUser(email, hashedPassword);
-   
+   const newUser = await createNewUser(name, email, hashedPassword);
+
    if (!newUser)
       return {
          messages: "An error occurred while creating your account.",

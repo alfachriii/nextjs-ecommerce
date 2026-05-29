@@ -9,10 +9,11 @@ import { PiSignOut } from "react-icons/pi";
 import { logout } from "@/app/actions/auth";
 import { redirect } from "next/navigation";
 import Loading from "./Loading";
-import { useStore } from "@/store";
+import { useDeliveryAddressState, useStore } from "@/store";
 
 const UserButton = () => {
    const { resetCart } = useStore();
+   const { resetAddresses } = useDeliveryAddressState();
    const [isUserModal, setIsUserModal] = useState<boolean>(false);
    const [logoutLoading, setLogoutLoading] = useState<boolean>(false);
    const [userData, setUserData] = useState<UserData>();
@@ -21,7 +22,9 @@ const UserButton = () => {
       setLogoutLoading(true);
       await logout();
       localStorage.removeItem("user");
-      localStorage.removeItem("cartStore")
+      localStorage.removeItem("cartStore");
+      localStorage.removeItem("addressStore");
+      resetAddresses();
       resetCart();
       setLogoutLoading(false);
       redirect("/");

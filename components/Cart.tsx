@@ -3,33 +3,65 @@
 import { Button } from "@/components/ui/button";
 import PriceFormatter from "@/components/PriceFormatter";
 import Separator from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-   Field,
-   FieldContent,
-   FieldDescription,
-   FieldLabel,
-} from "@/components/ui/field";
+
 import { useCart } from "@/hooks/useCart";
-import { useEffect } from "react";
+import { useEffect, useState, useTransition } from "react";
 import CartEmpty from "./CartEmpty";
-import { useStore } from "@/store";
+import { useDeliveryAddressState, useStore } from "@/store";
 import CartItem from "./CartItem";
+import DeliveryAddresses from "./DeliveryAddresses";
+import { checkOut } from "@/app/actions/order";
+import { myToast } from "@/lib/myToast";
+import { redirect } from "next/navigation";
+import Loading from "./Loading";
+import { useRouter } from "next/navigation";
 
 const Cart = () => {
+   const router = useRouter();
    const { getGroupedItems, getSubTotalPrice, getTotalPrice } = useStore();
+   const { getSelectedAddress } = useDeliveryAddressState();
+   const [isPending, startTransition] = useTransition();
    const { handleGetProductItems } = useCart();
+   const [isMounted, setIsMounted] = useState(false);
 
    useEffect(() => {
+      setIsMounted(true);
       handleGetProductItems();
+
+      return () => {
+         handleGetProductItems();
+      };
    }, []);
 
    const groupedItems = getGroupedItems();
+   if (!groupedItems || !isMounted) return null;
 
-   if (!groupedItems) return null;
+   const handleCheckOut = () => {
+      startTransition(async () => {
+         try {
+            const totalPrice = getTotalPrice();
+            const selectedDeliveryAddress = getSelectedAddress();
+            if (!selectedDeliveryAddress)
+               throw new Error("Delivery address must be selected.");
+
+            const result = await checkOut(
+               totalPrice,
+               groupedItems,
+               selectedDeliveryAddress,
+            );
+
+            window.open(result.trxSessionData.redirect_url, "_blank");
+            router.push(`/order/${result.orderId}`);
+         } catch (error) {
+            console.log("Failed checkout: ", error);
+            myToast.error(`${error}`);
+         }
+      });
+   };
 
    return (
       <>
+         {isPending && <Loading />}
          {groupedItems.length > 0 ? (
             <div className="w-full grid grid-cols-3 gap-8">
                <div className="col-span-2 bg-secondary/30 flex flex-col h-fit border-2 border-secondary-foreground/30 rounded-xl">
@@ -65,52 +97,16 @@ const Cart = () => {
                            className="font-semibold"
                         />
                      </div>
-                     <Button className="rounded-2xl" size="lg">
+                     <Button
+                        className="rounded-2xl"
+                        size="lg"
+                        onClick={handleCheckOut}
+                     >
                         Proceed to Checkout
                      </Button>
                   </div>
-                  <div className="bg-secondary/30 flex flex-col h-fit border-2 border-secondary-foreground/30 p-4 pt-6 gap-4 rounded-xl">
-                     <h2 className="font-semibold">Delivery Addresses</h2>
-                     <RadioGroup>
-                        <Field orientation="horizontal">
-                           <RadioGroupItem value="default" id="desc-r1" />
-                           <FieldContent>
-                              <FieldLabel htmlFor="desc-r1">
-                                 My Address
-                              </FieldLabel>
-                              <FieldDescription>
-                                 Jakarta, ID. Lorem ipsum dolor sit amet
-                                 consectetur.
-                              </FieldDescription>
-                           </FieldContent>
-                        </Field>
-                        <Field orientation="horizontal">
-                           <RadioGroupItem value="default" id="desc-r1" />
-                           <FieldContent>
-                              <FieldLabel htmlFor="desc-r1">
-                                 My Address
-                              </FieldLabel>
-                              <FieldDescription>
-                                 Jakarta, ID. Lorem ipsum dolor sit amet
-                                 consectetur.
-                              </FieldDescription>
-                           </FieldContent>
-                        </Field>
-                        <Field orientation="horizontal">
-                           <RadioGroupItem value="default" id="desc-r1" />
-                           <FieldContent>
-                              <FieldLabel htmlFor="desc-r1">
-                                 My Address
-                              </FieldLabel>
-                              <FieldDescription>
-                                 Jakarta, ID. Lorem ipsum dolor sit amet
-                                 consectetur.
-                              </FieldDescription>
-                           </FieldContent>
-                        </Field>
-                     </RadioGroup>
-                     <Button variant="outline">Add new address</Button>
-                  </div>
+
+                  <DeliveryAddresses />
                </div>
             </div>
          ) : (

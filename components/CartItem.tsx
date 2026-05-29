@@ -13,7 +13,7 @@ import Loading from "./Loading";
 
 const CartItem = ({ cartItem }: { cartItem: CartItemType }) => {
    const { handleDeleteItem, loading } = useCart();
-   console.log(loading);
+
    return (
       <>
          {loading ? (
@@ -68,10 +68,7 @@ const CartItem = ({ cartItem }: { cartItem: CartItemType }) => {
                      </button>
                   </div>
                   <div className="w-full flex items-baseline justify-between">
-                     <Counter
-                        product={cartItem.product}
-                        isPending={loading}
-                     />
+                     <Counter product={cartItem.product} isPending={loading} />
                      <PriceFormatter
                         amount={cartItem.product?.price}
                         className="font-bold text-xl"
